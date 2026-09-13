@@ -14,6 +14,12 @@ async function unwrap<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export async function dataUrlToFile(dataUrl: string, name: string): Promise<File> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], name, { type: blob.type });
+}
+
 export interface SegmentationResult {
   input: string;
   mask: string;
@@ -39,6 +45,11 @@ export async function runSegmentation(
   return unwrap<SegmentationResult>(res);
 }
 
+export async function getSegmentationSamples(): Promise<{ samples: string[] }> {
+  const res = await fetch(`${API_BASE}/segmentation/samples`);
+  return unwrap<{ samples: string[] }>(res);
+}
+
 export interface PanoramaResult {
   keypointOverlays: string[];
   matchOverlays: string[];
@@ -51,6 +62,11 @@ export async function runPanorama(files: File[], const_: number): Promise<Panora
   form.append("const", String(const_));
   const res = await fetch(`${API_BASE}/panorama`, { method: "POST", body: form });
   return unwrap<PanoramaResult>(res);
+}
+
+export async function getPanoramaSample(): Promise<{ images: string[] }> {
+  const res = await fetch(`${API_BASE}/panorama/sample`);
+  return unwrap<{ images: string[] }>(res);
 }
 
 export interface PointCloudData {
@@ -78,7 +94,17 @@ export interface DisparityResult {
   right: string;
   disparityGray: string;
   disparity: string;
+  filteredDisparity: string;
+  filteredKeepFrac: number;
+  sgbmDisparity: string;
+  sgbmKeepFrac: number;
   pointCloud: PointCloudData;
+  sgbmPointCloud: PointCloudData;
+}
+
+export async function getDisparitySample(): Promise<{ left: string; right: string }> {
+  const res = await fetch(`${API_BASE}/disparity/sample`);
+  return unwrap<{ left: string; right: string }>(res);
 }
 
 export type Quad = [number, number][];
@@ -129,6 +155,16 @@ export async function runInsert(dest: File, source: File, quad?: Quad): Promise<
   return unwrap<InsertResult>(res);
 }
 
+export async function getRectifySample(): Promise<{ image: string }> {
+  const res = await fetch(`${API_BASE}/rectify/sample`);
+  return unwrap<{ image: string }>(res);
+}
+
+export async function getRectifyInsertSample(): Promise<{ dest: string; source: string }> {
+  const res = await fetch(`${API_BASE}/rectify/insert-sample`);
+  return unwrap<{ dest: string; source: string }>(res);
+}
+
 export interface CornerMatchResult {
   cornersOverlay1: string;
   cornersOverlay2: string;
@@ -153,6 +189,11 @@ export async function runCornerMatch(
   return unwrap<CornerMatchResult>(res);
 }
 
+export async function getCornersSample(): Promise<{ file1: string; file2: string }> {
+  const res = await fetch(`${API_BASE}/corners/sample`);
+  return unwrap<{ file1: string; file2: string }>(res);
+}
+
 export interface TextureNeighbor {
   label: string;
   distance: number;
@@ -174,6 +215,11 @@ export async function runTextureClassify(file: File): Promise<TextureResult> {
   form.append("file", file);
   const res = await fetch(`${API_BASE}/texture/classify`, { method: "POST", body: form });
   return unwrap<TextureResult>(res);
+}
+
+export async function getTextureSamples(): Promise<{ samples: string[] }> {
+  const res = await fetch(`${API_BASE}/texture/samples`);
+  return unwrap<{ samples: string[] }>(res);
 }
 
 export interface FaceMatch {
@@ -280,4 +326,34 @@ export async function runDisparity(
   form.append("d_max", String(opts.dMax));
   const res = await fetch(`${API_BASE}/disparity`, { method: "POST", body: form });
   return unwrap<DisparityResult>(res);
+}
+
+export interface SparseReconstructionResult {
+  left: string;
+  right: string;
+  numSiftMatches: number;
+  numRansacInliers: number;
+  keypointMatchOverlay: string;
+  rectifiedLeft: string;
+  rectifiedRight: string;
+  edgesLeft: string;
+  edgesRight: string;
+  edgeMatchOverlay: string;
+  numEdgeMatches: number;
+  numReconstructed: number;
+  medianParallaxDeg: number;
+  pointCloud: PointCloudData;
+}
+
+export async function runSparseReconstruction(left: File, right: File): Promise<SparseReconstructionResult> {
+  const form = new FormData();
+  form.append("left", left);
+  form.append("right", right);
+  const res = await fetch(`${API_BASE}/sparse-reconstruction`, { method: "POST", body: form });
+  return unwrap<SparseReconstructionResult>(res);
+}
+
+export async function getSparseReconstructionSample(): Promise<{ left: string; right: string }> {
+  const res = await fetch(`${API_BASE}/sparse-reconstruction/sample`);
+  return unwrap<{ left: string; right: string }>(res);
 }

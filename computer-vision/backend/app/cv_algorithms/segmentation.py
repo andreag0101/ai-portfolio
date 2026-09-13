@@ -10,9 +10,14 @@ fraction of a second instead of minutes.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import cv2
 from scipy.ndimage import maximum_filter, minimum_filter, uniform_filter
+
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "data" / "segmentation"
+SAMPLE_IMAGES = [SAMPLE_DIR / name for name in ("dog.jpg", "flower.jpg", "tower.jpg", "moon.jpg")]
 
 
 def otsu_threshold_mask(channel: np.ndarray, bins: int, flip: bool) -> np.ndarray:

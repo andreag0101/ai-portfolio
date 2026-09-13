@@ -1,11 +1,27 @@
 from __future__ import annotations
 
+import cv2
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from ..cv_algorithms import disparity as disp
 from ..utils.imaging import read_upload_as_bgr, to_data_url, array_to_base64
 
 router = APIRouter(prefix="/api/disparity", tags=["disparity"])
+
+
+@router.get("/sample")
+async def sample():
+    left = cv2.imread(str(disp.SAMPLE_LEFT))
+    right = cv2.imread(str(disp.SAMPLE_RIGHT))
+    return {"left": to_data_url(left), "right": to_data_url(right)}
+
+
+def _point_cloud_json(positions, colors):
+    return {
+        "positions": array_to_base64(positions),
+        "colors": array_to_base64(colors),
+        "numPoints": int(positions.shape[0]),
+    }
 
 
 @router.post("")
@@ -29,9 +45,10 @@ async def compute(
         "right": to_data_url(result["input_right_resized"]),
         "disparityGray": to_data_url(result["disparity_gray"]),
         "disparity": to_data_url(result["disparity_color"]),
-        "pointCloud": {
-            "positions": array_to_base64(result["point_positions"]),
-            "colors": array_to_base64(result["point_colors"]),
-            "numPoints": int(result["point_positions"].shape[0]),
-        },
+        "filteredDisparity": to_data_url(result["filtered_disparity_visual"]),
+        "filteredKeepFrac": result["filtered_keep_frac"],
+        "sgbmDisparity": to_data_url(result["sgbm_disparity_visual"]),
+        "sgbmKeepFrac": result["sgbm_keep_frac"],
+        "pointCloud": _point_cloud_json(result["point_positions"], result["point_colors"]),
+        "sgbmPointCloud": _point_cloud_json(result["sgbm_point_positions"], result["sgbm_point_colors"]),
     }

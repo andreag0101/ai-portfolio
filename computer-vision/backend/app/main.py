@@ -1,7 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import segmentation, panorama, disparity, rectify, corners, texture, face, calibration, car_detection
+from .routers import (
+    segmentation,
+    panorama,
+    disparity,
+    rectify,
+    corners,
+    texture,
+    face,
+    calibration,
+    car_detection,
+    sparse_reconstruction,
+)
 
 app = FastAPI(title="ECE 661 Computer Vision Portfolio API")
 
@@ -21,6 +32,7 @@ app.include_router(texture.router)
 app.include_router(face.router)
 app.include_router(calibration.router)
 app.include_router(car_detection.router)
+app.include_router(sparse_reconstruction.router)
 
 
 @app.get("/api/health")

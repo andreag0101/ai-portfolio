@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import QuadPicker from "../components/QuadPicker";
 import Stepper, { type Step } from "../components/Stepper";
-import { runDewarp, runInsert, type DewarpResult, type InsertResult, type Quad } from "../lib/api";
+import {
+  runDewarp,
+  runInsert,
+  getRectifySample,
+  getRectifyInsertSample,
+  dataUrlToFile,
+  type DewarpResult,
+  type InsertResult,
+  type Quad,
+} from "../lib/api";
 
 function dewarpSteps(result: DewarpResult): Step[] {
   return [
@@ -88,6 +97,8 @@ function Straighten() {
   const [files, setFiles] = useState<File[]>([]);
   const [quad, setQuad] = useState<Quad | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
+  const [autoRun, setAutoRun] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DewarpResult | null>(null);
 
@@ -101,6 +112,30 @@ function Straighten() {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (autoRun && quad && files.length > 0) {
+      setAutoRun(false);
+      handleRun();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRun, quad, files]);
+
+  async function handleUseSample() {
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const { image } = await getRectifySample();
+      const file = await dataUrlToFile(image, "laptop-screen.jpg");
+      setFiles([file]);
+      setResult(null);
+      setAutoRun(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setSampleLoading(false);
     }
   }
 
@@ -119,6 +154,13 @@ function Straighten() {
             setResult(null);
           }}
         />
+        <button
+          onClick={handleUseSample}
+          disabled={sampleLoading || loading}
+          className="w-full rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition disabled:opacity-40 dark:bg-neutral-800 dark:text-neutral-300"
+        >
+          {sampleLoading ? "Loading…" : "Use sample photo"}
+        </button>
         <QuadPicker file={files[0] ?? null} onQuadChange={setQuad} />
         <button
           onClick={handleRun}
@@ -152,6 +194,8 @@ function Insert() {
   const [sourceFiles, setSourceFiles] = useState<File[]>([]);
   const [quad, setQuad] = useState<Quad | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
+  const [autoRun, setAutoRun] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<InsertResult | null>(null);
 
@@ -165,6 +209,34 @@ function Insert() {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (autoRun && quad && destFiles.length > 0 && sourceFiles.length > 0) {
+      setAutoRun(false);
+      handleRun();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRun, quad, destFiles, sourceFiles]);
+
+  async function handleUseSample() {
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const { dest, source } = await getRectifyInsertSample();
+      const [destFile, sourceFile] = await Promise.all([
+        dataUrlToFile(dest, "picture-frame.jpeg"),
+        dataUrlToFile(source, "alex-honnold.jpg"),
+      ]);
+      setDestFiles([destFile]);
+      setSourceFiles([sourceFile]);
+      setResult(null);
+      setAutoRun(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setSampleLoading(false);
     }
   }
 
@@ -183,6 +255,13 @@ function Insert() {
             setResult(null);
           }}
         />
+        <button
+          onClick={handleUseSample}
+          disabled={sampleLoading || loading}
+          className="w-full rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition disabled:opacity-40 dark:bg-neutral-800 dark:text-neutral-300"
+        >
+          {sampleLoading ? "Loading…" : "Use sample photos"}
+        </button>
         <QuadPicker file={destFiles[0] ?? null} onQuadChange={setQuad} />
         <FilePicker label="Image to insert" files={sourceFiles} onChange={setSourceFiles} />
         <button

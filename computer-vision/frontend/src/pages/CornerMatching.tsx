@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runCornerMatch, type CornerMatchResult } from "../lib/api";
+import { runCornerMatch, getCornersSample, dataUrlToFile, type CornerMatchResult } from "../lib/api";
 
 function buildSteps(result: CornerMatchResult, distType: "SSD" | "NCC"): Step[] {
   return [
@@ -36,19 +36,41 @@ export default function CornerMatching() {
   const [sigma, setSigma] = useState(1.2);
   const [distType, setDistType] = useState<"SSD" | "NCC">("SSD");
   const [loading, setLoading] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CornerMatchResult | null>(null);
 
-  async function handleRun() {
-    if (files1.length === 0 || files2.length === 0) return;
+  async function handleRun(file1?: File, file2?: File) {
+    const f1 = file1 ?? files1[0];
+    const f2 = file2 ?? files2[0];
+    if (!f1 || !f2) return;
     setLoading(true);
     setError(null);
     try {
-      setResult(await runCornerMatch(files1[0], files2[0], { sigma, distType }));
+      setResult(await runCornerMatch(f1, f2, { sigma, distType }));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleUseSample() {
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const { file1, file2 } = await getCornersSample();
+      const [f1, f2] = await Promise.all([
+        dataUrlToFile(file1, "hovde-1.jpg"),
+        dataUrlToFile(file2, "hovde-2.jpg"),
+      ]);
+      setFiles1([f1]);
+      setFiles2([f2]);
+      await handleRun(f1, f2);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setSampleLoading(false);
     }
   }
 
@@ -72,6 +94,14 @@ export default function CornerMatching() {
           </p>
           <FilePicker label="Image 1" files={files1} onChange={setFiles1} />
           <FilePicker label="Image 2" files={files2} onChange={setFiles2} />
+
+          <button
+            onClick={handleUseSample}
+            disabled={sampleLoading || loading}
+            className="w-full rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition disabled:opacity-40 dark:bg-neutral-800 dark:text-neutral-300"
+          >
+            {sampleLoading ? "Loading…" : "Use sample photo pair"}
+          </button>
 
           <div>
             <label className="mb-1.5 flex justify-between text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -109,7 +139,7 @@ export default function CornerMatching() {
           </div>
 
           <button
-            onClick={handleRun}
+            onClick={() => handleRun()}
             disabled={files1.length === 0 || files2.length === 0 || loading}
             className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
           >

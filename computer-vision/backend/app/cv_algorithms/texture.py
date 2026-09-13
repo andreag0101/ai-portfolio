@@ -36,6 +36,8 @@ import cv2
 
 CLASSES = ["cloudy", "rain", "shine", "sunrise"]
 TRAINING_DIR = Path(__file__).resolve().parents[2] / "data" / "texture" / "training"
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "data" / "texture" / "samples"
+SAMPLE_IMAGES = [SAMPLE_DIR / f"{cls}.jpg" for cls in CLASSES]
 
 P = 8
 

@@ -25,12 +25,19 @@ pick one instead of always trusting the top-ranked guess.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import cv2
 
 from .panorama import get_H_LLS as get_H, interpolate_holes
 
 MAX_DIM = 1000
+
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "data" / "homography"
+SAMPLE_STRAIGHTEN = SAMPLE_DIR / "straighten.jpg"
+SAMPLE_FRAME = SAMPLE_DIR / "frame.jpeg"
+SAMPLE_INSERT_SOURCE = SAMPLE_DIR / "insert_source.jpg"
 
 
 def resize_for_demo(img_bgr: np.ndarray, max_dim: int = MAX_DIM) -> np.ndarray:

@@ -97,6 +97,13 @@ export const categories: Category[] = [
         topics: ["Epipolar geometry", "Dense stereo matching"],
         path: "/disparity",
       },
+      {
+        id: "sparse-reconstruction",
+        title: "Sparse Stereo Reconstruction (Edge-Based)",
+        blurb: "Recovers the fundamental matrix from SIFT+RANSAC, self-rectifies, then triangulates only Canny edge points — no dense background noise.",
+        topics: ["Fundamental matrix", "Self-rectification", "Sparse triangulation"],
+        path: "/sparse-reconstruction",
+      },
     ],
   },
   {

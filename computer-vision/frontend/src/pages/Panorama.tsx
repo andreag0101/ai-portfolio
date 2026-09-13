@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runPanorama, type PanoramaResult } from "../lib/api";
+import { runPanorama, getPanoramaSample, dataUrlToFile, type PanoramaResult } from "../lib/api";
 
 function buildSteps(result: PanoramaResult): Step[] {
   return [
@@ -41,22 +41,44 @@ export default function Panorama() {
   const [files, setFiles] = useState<File[]>([]);
   const [ransacConst, setRansacConst] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PanoramaResult | null>(null);
 
-  async function handleRun() {
-    if (files.length < 2) return;
+  async function handleRun(useFiles?: File[], useConst?: number) {
+    const fs = useFiles ?? files;
+    if (fs.length < 2) return;
     setLoading(true);
     setError(null);
     setStatusMsg("Matching features and stitching — this can take a few seconds…");
     try {
-      setResult(await runPanorama(files, ransacConst));
+      setResult(await runPanorama(fs, useConst ?? ransacConst));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
       setStatusMsg(null);
+    }
+  }
+
+  async function handleUseSample() {
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const { images } = await getPanoramaSample();
+      const sampleFiles = await Promise.all(images.map((dataUrl, i) => dataUrlToFile(dataUrl, `fountain-${i + 1}.jpg`)));
+      setFiles(sampleFiles);
+      // A tighter tolerance than the default gives a visibly cleaner stitch for this
+      // sequence specifically -- the fountain is a close foreground object, so wider
+      // tolerances let genuinely inconsistent (parallax-affected) matches into the
+      // homography fit.
+      setRansacConst(5);
+      await handleRun(sampleFiles, 5);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      setSampleLoading(false);
     }
   }
 
@@ -78,6 +100,14 @@ export default function Panorama() {
         <div className="space-y-5">
           <FilePicker label="Images (in order, left to right)" files={files} onChange={setFiles} multiple />
 
+          <button
+            onClick={handleUseSample}
+            disabled={sampleLoading || loading}
+            className="w-full rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition disabled:opacity-40 dark:bg-neutral-800 dark:text-neutral-300"
+          >
+            {sampleLoading ? "Loading…" : "Use sample photo sequence"}
+          </button>
+
           <div>
             <label className="mb-1.5 flex justify-between text-sm font-medium text-neutral-700 dark:text-neutral-300">
               <span>RANSAC inlier tolerance</span>
@@ -94,7 +124,7 @@ export default function Panorama() {
           </div>
 
           <button
-            onClick={handleRun}
+            onClick={() => handleRun()}
             disabled={files.length < 2 || loading}
             className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
           >

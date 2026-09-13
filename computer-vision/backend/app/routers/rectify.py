@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from typing import Optional
 
+import cv2
 import numpy as np
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
@@ -10,6 +11,19 @@ from ..cv_algorithms import rectify as rect
 from ..utils.imaging import read_upload_as_bgr, to_data_url
 
 router = APIRouter(prefix="/api/rectify", tags=["rectify"])
+
+
+@router.get("/sample")
+async def sample():
+    img = cv2.imread(str(rect.SAMPLE_STRAIGHTEN))
+    return {"image": to_data_url(img)}
+
+
+@router.get("/insert-sample")
+async def insert_sample():
+    dest = cv2.imread(str(rect.SAMPLE_FRAME))
+    source = cv2.imread(str(rect.SAMPLE_INSERT_SOURCE))
+    return {"dest": to_data_url(dest), "source": to_data_url(source)}
 
 
 def _parse_quad(quad_json: Optional[str]) -> Optional[np.ndarray]:

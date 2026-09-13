@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runTextureClassify, type TextureResult } from "../lib/api";
+import { runTextureClassify, getTextureSamples, dataUrlToFile, type TextureResult } from "../lib/api";
 
 const CLASS_LABELS: Record<string, string> = {
   cloudy: "Cloudy",
@@ -82,18 +82,30 @@ export default function TextureClassification() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TextureResult | null>(null);
+  const [samples, setSamples] = useState<string[]>([]);
 
-  async function handleRun() {
-    if (files.length === 0) return;
+  useEffect(() => {
+    getTextureSamples().then((r) => setSamples(r.samples)).catch(() => {});
+  }, []);
+
+  async function handleRun(file?: File) {
+    const f = file ?? files[0];
+    if (!f) return;
     setLoading(true);
     setError(null);
     try {
-      setResult(await runTextureClassify(files[0]));
+      setResult(await runTextureClassify(f));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleSampleClick(dataUrl: string, i: number) {
+    const file = await dataUrlToFile(dataUrl, `sample-${i}.jpg`);
+    setFiles([file]);
+    handleRun(file);
   }
 
   return (
@@ -114,8 +126,22 @@ export default function TextureClassification() {
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
         <div className="space-y-5">
           <FilePicker label="Photo" files={files} onChange={setFiles} />
+
+          {samples.length > 0 && (
+            <div>
+              <p className="mb-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">Or try a sample</p>
+              <div className="flex flex-wrap gap-1.5">
+                {samples.map((s, i) => (
+                  <button key={i} onClick={() => handleSampleClick(s, i)} className="overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800">
+                    <img src={s} alt={`Sample ${i + 1}`} className="h-14 w-14 object-cover" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <button
-            onClick={handleRun}
+            onClick={() => handleRun()}
             disabled={files.length === 0 || loading}
             className="w-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition disabled:opacity-40 dark:bg-neutral-100 dark:text-neutral-900"
           >

@@ -11,12 +11,17 @@ take tens of seconds per image; the vectorized version is near-instant).
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import cv2
 from scipy.optimize import least_squares
 from scipy import ndimage as nd
 
 MAX_DIM = 900  # resize uploads to keep SIFT + warping responsive
+
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "data" / "panorama"
+SAMPLE_IMAGES = [SAMPLE_DIR / f"{i}.jpg" for i in range(1, 6)]
 
 
 def resize_for_demo(img_bgr: np.ndarray, max_dim: int = MAX_DIM) -> np.ndarray:

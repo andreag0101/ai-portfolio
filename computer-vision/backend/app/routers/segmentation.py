@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+import cv2
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from ..cv_algorithms import segmentation as seg
 from ..utils.imaging import read_upload_as_bgr, to_data_url
 
 router = APIRouter(prefix="/api/segmentation", tags=["segmentation"])
+
+
+@router.get("/samples")
+async def samples():
+    images = [cv2.imread(str(p)) for p in seg.SAMPLE_IMAGES]
+    return {"samples": [to_data_url(im) for im in images if im is not None]}
 
 
 @router.post("")

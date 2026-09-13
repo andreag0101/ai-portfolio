@@ -9,6 +9,12 @@ from ..utils.imaging import read_upload_as_bgr, to_data_url
 router = APIRouter(prefix="/api/texture", tags=["texture"])
 
 
+@router.get("/samples")
+async def samples():
+    images = [cv2.imread(str(p)) for p in texture_algo.SAMPLE_IMAGES]
+    return {"samples": [to_data_url(im) for im in images if im is not None]}
+
+
 @router.post("/classify")
 async def classify(file: UploadFile = File(...)):
     img = await read_upload_as_bgr(file)

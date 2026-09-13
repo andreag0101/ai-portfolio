@@ -3,13 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runCarDetection, getCarDetectionSamples, type CarDetectionResult } from "../lib/api";
-
-async function dataUrlToFile(dataUrl: string, name: string): Promise<File> {
-  const res = await fetch(dataUrl);
-  const blob = await res.blob();
-  return new File([blob], name, { type: blob.type });
-}
+import { runCarDetection, getCarDetectionSamples, dataUrlToFile, type CarDetectionResult } from "../lib/api";
 
 function buildSteps(result: CarDetectionResult): Step[] {
   const margin = result.score - result.threshold;

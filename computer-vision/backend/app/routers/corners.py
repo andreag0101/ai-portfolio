@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+import cv2
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from ..cv_algorithms import corners as corner_algo
 from ..utils.imaging import read_upload_as_bgr, to_data_url
 
 router = APIRouter(prefix="/api/corners", tags=["corners"])
+
+
+@router.get("/sample")
+async def sample():
+    img1 = cv2.imread(str(corner_algo.SAMPLE_LEFT))
+    img2 = cv2.imread(str(corner_algo.SAMPLE_RIGHT))
+    return {"file1": to_data_url(img1), "file2": to_data_url(img2)}
 
 
 @router.post("/detect")

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
+import cv2
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from ..cv_algorithms import panorama as pano
@@ -10,6 +11,12 @@ from ..utils.imaging import read_upload_as_bgr, to_data_url
 router = APIRouter(prefix="/api/panorama", tags=["panorama"])
 
 MAX_IMAGES = 6
+
+
+@router.get("/sample")
+async def sample():
+    images = [cv2.imread(str(p)) for p in pano.SAMPLE_IMAGES]
+    return {"images": [to_data_url(im) for im in images if im is not None]}
 
 
 @router.post("")

@@ -17,11 +17,17 @@ would greedily commit the *worst* matches first. This port sorts by a unified
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import cv2
 from scipy.ndimage import maximum_filter
 
 MAX_DIM = 700
+
+SAMPLE_DIR = Path(__file__).resolve().parents[2] / "data" / "corners"
+SAMPLE_LEFT = SAMPLE_DIR / "left.jpg"
+SAMPLE_RIGHT = SAMPLE_DIR / "right.jpg"
 
 
 def resize_for_demo(img_bgr: np.ndarray, max_dim: int = MAX_DIM) -> np.ndarray:
