@@ -1,0 +1,25 @@
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Python / backend
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Env files (never commit secrets)
+.env
+.env.local
+.env.*.local
