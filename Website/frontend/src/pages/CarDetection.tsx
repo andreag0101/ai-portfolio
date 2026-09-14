@@ -10,12 +10,12 @@ function buildSteps(result: CarDetectionResult): Step[] {
   return [
     {
       title: "Input patch",
-      description: "Resized to 40×20. This classifies one already-cropped patch — it doesn't search a full photo for cars.",
+      description: "Resized to 40×20. This classifies one already-cropped patch; it doesn't search a full photo for cars.",
       content: <ResultImage label="Input" src={result.resizedPatch} />,
     },
     {
       title: "Strongest features",
-      description: "The 3 highest-weight Haar-like rectangles among the 20 boosted this round chose — each one sums pixels in the dark box minus the light box.",
+      description: "The 3 highest-weight Haar-like rectangles among the 20 boosted this round chose: each one sums pixels in the dark box minus the light box.",
       content: <ResultImage label="Top features" src={result.featureOverlay} />,
     },
     {
@@ -70,7 +70,7 @@ export default function CarDetection() {
   async function handleRun(file: File) {
     setLoading(true);
     setError(null);
-    setStatusMsg("Classifying — the first request also trains the classifier, which can take about a minute…");
+    setStatusMsg("Classifying: the first request also trains the classifier, which can take about a minute…");
     try {
       setResult(await runCarDetection(file));
       setIsDefault(false);
@@ -96,11 +96,11 @@ export default function CarDetection() {
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Car Detection: Haar Features + AdaBoost</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         Integral-image Haar-like features (11,200 of them, for a 40&times;20 patch) boosted with AdaBoost
-        into a single strong classifier &mdash; the same feature family Viola-Jones face detection uses.
+        into a single strong classifier (the same feature family Viola-Jones face detection uses).
         This classifies one pre-cropped patch as car / not-car; it doesn't scan a full photo for cars
         (the original's multi-stage cascade exists for that kind of sliding-window search, which isn't
         what this demo does). Works best on a patch already cropped tightly around a vehicle or not, at
-        roughly a 2:1 width:height ratio &mdash; try a sample below for a guaranteed reasonable input.
+        roughly a 2:1 width:height ratio. Try a sample below for a guaranteed reasonable input.
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">

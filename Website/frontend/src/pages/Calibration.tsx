@@ -97,7 +97,7 @@ export default function Calibration() {
     if (files.length < 3) return;
     setLoading(true);
     setError(null);
-    setStatusMsg("Detecting corners and solving for intrinsics — a few seconds…");
+    setStatusMsg("Detecting corners and solving for intrinsics (a few seconds)…");
     try {
       setResult(await runCalibration(files));
       setIsDefault(false);
@@ -133,7 +133,7 @@ export default function Calibration() {
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Camera Calibration (Zhang's Method)</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         Recovers a camera's intrinsic parameters (focal length, principal point) from 3+ photos of a
-        planar pattern at different angles &mdash; a from-scratch Hough-line corner detector, per-photo
+        planar pattern at different angles: a from-scratch Hough-line corner detector, per-photo
         homographies, Zhang's closed-form absolute-conic solution, and Levenberg-Marquardt refinement.
         The pattern is a specific printable grid of squares (not a standard chessboard), so calibrating
         your own photos means printing it below; otherwise try the bundled sample photos.

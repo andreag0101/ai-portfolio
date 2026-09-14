@@ -58,8 +58,8 @@ export default function Homography() {
       </Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Planar Rectification & Compositing</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-        Both tools automatically find candidate quadrilaterals in a photo &mdash; Canny edges, contour
-        detection, and polygon approximation, the same approach document scanners use &mdash; then solve
+        Both tools automatically find candidate quadrilaterals in a photo (Canny edges, contour
+        detection, and polygon approximation, the same approach document scanners use), then solve
         a direct linear transform homography from the four corner correspondences to warp the image. No
         clicking corners by hand. Photos with nested rectangles (a frame's outer edge, its mat, and the
         picture inside it) or partial occlusion are genuinely ambiguous, so pick from the detected options

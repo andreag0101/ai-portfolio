@@ -98,8 +98,8 @@ export default function Segmentation() {
       </Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Image Segmentation</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-        From-scratch iterative Otsu thresholding &mdash; run per RGB channel or on a local-variance
-        texture map &mdash; followed by morphological opening/closing and boundary extraction. Every
+        From-scratch iterative Otsu thresholding (run per RGB channel or on a local-variance
+        texture map), followed by morphological opening/closing and boundary extraction. Every
         mask is the raw, un-smoothed output of the algorithm, so noisy speckling in the initial mask
         is expected; opening/closing cleans it up.
       </p>

@@ -61,7 +61,7 @@ export default function Panorama() {
     if (fs.length < 2) return;
     setLoading(true);
     setError(null);
-    setStatusMsg("Matching features and stitching — this can take a few seconds…");
+    setStatusMsg("Matching features and stitching: this can take a few seconds…");
     try {
       setResult(await runPanorama(fs, useConst ?? ransacConst));
       setIsDefault(false);
@@ -103,7 +103,7 @@ export default function Panorama() {
         Upload 2&ndash;6 overlapping photos, left to right. Each pair is matched with SIFT, a
         homography is estimated with a from-scratch RANSAC, refined with Levenberg-Marquardt, and
         every image is warped into the frame of the middle photo. Straight-line perspective warping
-        (no cylindrical projection) means wide sequences can bow outward at the edges &mdash; that's
+        (no cylindrical projection) means wide sequences can bow outward at the edges; that's
         expected, not a bug.
       </p>
 

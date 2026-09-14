@@ -66,7 +66,7 @@ function buildSteps(result: TextureResult): Step[] {
     },
     {
       title: "LBP texture map",
-      description: "Each pixel's rotation-invariant local binary pattern, color-coded by which of the 10 pattern categories it falls into. This per-pixel map is summarized into a 10-bin histogram — that histogram is the whole feature vector.",
+      description: "Each pixel's rotation-invariant local binary pattern, color-coded by which of the 10 pattern categories it falls into. This per-pixel map is summarized into a 10-bin histogram: that histogram is the whole feature vector.",
       content: <ResultImage label="LBP encoding" src={result.encodingVisual} />,
     },
     {
@@ -125,7 +125,7 @@ export default function TextureClassification() {
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         A rotation-invariant Local Binary Pattern histogram (computed on the Hue channel) describes each
         photo's texture, then 1-nearest-neighbor over a bundled set of 922 labeled photos (cloudy, rain,
-        shine, sunrise) picks the class. It's a deliberately simple, interpretable feature &mdash; on a
+        shine, sunrise) picks the class. It's a deliberately simple, interpretable feature: on a
         held-out set of 200 photos it reaches about <strong>57% accuracy</strong> across 4 classes (vs.
         25% chance), clearly better than guessing but not a strong classifier. Expect it to lean on sky
         color and texture more than genuine weather cues.

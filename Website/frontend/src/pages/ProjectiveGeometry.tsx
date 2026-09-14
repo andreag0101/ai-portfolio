@@ -74,8 +74,8 @@ export default function ProjectiveGeometry() {
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Projective Geometry Playground</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         Point-line duality: a line through two points, or the intersection of two lines, is just the
-        cross product of their homogeneous coordinates. Drag the triangle's corners or the aim handle
-        &mdash; everything recomputes live using that one operation.
+        cross product of their homogeneous coordinates. Drag the triangle's corners or the aim handle;
+        everything recomputes live using that one operation.
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_260px]">
@@ -176,7 +176,7 @@ export default function ProjectiveGeometry() {
           <div className="space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
             <p className="font-medium text-neutral-700 dark:text-neutral-300">How it works</p>
             <p>Each triangle edge and the aim ray are represented as homogeneous lines (cross product of their two endpoints).</p>
-            <p>An intersection point is the cross product of two lines &mdash; the dual operation.</p>
+            <p>An intersection point is the cross product of two lines: the dual operation.</p>
             <p>The ray hits the triangle when it crosses exactly two of its three edges within their segment bounds.</p>
           </div>
         </div>

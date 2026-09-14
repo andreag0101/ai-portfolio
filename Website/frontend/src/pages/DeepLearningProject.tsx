@@ -16,12 +16,7 @@ export default function DeepLearningProject() {
         &larr; All Deep Learning projects
       </Link>
 
-      <div className="mt-2 flex items-center gap-2">
-        <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
-          ECE 60146 &middot; {project.hw}
-        </span>
-      </div>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">{project.title}</h1>
+      <h1 className="mt-3 text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">{project.title}</h1>
 
       {project.highlights.length > 0 && (
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -83,7 +78,7 @@ export default function DeepLearningProject() {
       </div>
 
       <div className="mt-12 flex flex-wrap gap-3 border-t border-neutral-200 pt-6 dark:border-neutral-800">
-        {project.reports.map((r) => (
+        {project.writeups.map((r) => (
           <a
             key={r.href}
             href={r.href}

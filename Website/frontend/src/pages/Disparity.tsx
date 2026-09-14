@@ -43,7 +43,7 @@ function buildSteps(result: DisparityResult): Step[] {
     },
     {
       title: "Where it goes wrong",
-      description: `Matching each pixel's window independently has no way to prefer spatially-consistent answers, so it's unreliable in flat/textureless regions specifically — many windows there look nearly identical. A left-right consistency check (match left→right and right→left independently, keep only pixels where they agree) plus a raw match-confidence threshold rejects those unreliable pixels instead of guessing. Dark pixels below were rejected — kept ${(result.filteredKeepFrac * 100).toFixed(0)}% of the image.`,
+      description: `Matching each pixel's window independently has no way to prefer spatially-consistent answers, so it's unreliable in flat/textureless regions specifically: many windows there look nearly identical. A left-right consistency check (match left→right and right→left independently, keep only pixels where they agree) plus a raw match-confidence threshold rejects those unreliable pixels instead of guessing. Dark pixels below were rejected; kept ${(result.filteredKeepFrac * 100).toFixed(0)}% of the image.`,
       content: <ResultImage label="Filtered disparity (unreliable pixels marked dark)" src={result.filteredDisparity} />,
     },
     {
@@ -53,7 +53,7 @@ function buildSteps(result: DisparityResult): Step[] {
     },
     {
       title: "3D reconstruction",
-      description: "Each kept pixel's disparity converted to depth and unprojected into 3D, colored from the left photo. There's no real camera calibration for an arbitrary upload, so this uses a nominal focal length — the shape is relatively correct, not metrically accurate. Drag to rotate, scroll to zoom, right-drag to pan.",
+      description: "Each kept pixel's disparity converted to depth and unprojected into 3D, colored from the left photo. There's no real camera calibration for an arbitrary upload, so this uses a nominal focal length: the shape is relatively correct, not metrically accurate. Drag to rotate, scroll to zoom, right-drag to pan.",
       content: (
         <div className="space-y-6">
           <div>
@@ -137,17 +137,17 @@ export default function Disparity() {
       </Link>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight">Stereo Disparity</h1>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
-        Upload a rectified stereo pair (same scene, camera shifted sideways &mdash; e.g. a Middlebury
+        Upload a rectified stereo pair (same scene, camera shifted sideways; e.g. a Middlebury
         stereo set). For every pixel, a census transform encodes its window as a "brighter than
         center" bit vector; the disparity that minimizes the Hamming distance between left and right
         windows wins. Warm colors = close to the camera, cool colors = far away. On a Middlebury pair
         with known ground truth, this from-scratch matcher gets ~74&ndash;78% of pixels within 2px at
-        typical window sizes &mdash; a real result, not a broken one, but far from perfect. The later
+        typical window sizes: a real result, not a broken one, but far from perfect. The later
         steps show why, and two ways to fix it.
       </p>
       <p className="mt-2 max-w-2xl text-sm text-neutral-600 dark:text-neutral-400">
         This matters most for input quality: the algorithm only searches along rows, so it assumes
-        the pair is <em>actually rectified</em> &mdash; matching points sit on exactly the same
+        the pair is <em>actually rectified</em>: matching points sit on exactly the same
         scanline. A casual pair of handheld phone photos almost never satisfies that (any hand tilt or
         vertical shift breaks the assumption entirely), so results from a phone-shot pair can look bad
         for reasons that have nothing to do with the matching algorithm itself. Use the sample button

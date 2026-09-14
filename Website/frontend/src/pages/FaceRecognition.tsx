@@ -114,9 +114,9 @@ export default function FaceRecognition() {
         PCA (eigenfaces) and Fisher-LDA (fisherfaces) each project a face onto a low-dimensional subspace
         learned from 630 photos of 30 people, then find the nearest training photo in that subspace. This
         is <strong>closed-set recognition against exactly those 30 people</strong>, with no face detection
-        or alignment step &mdash; your photo just gets resized to 128&times;128 and compared directly, so
+        or alignment step. Your photo just gets resized to 128&times;128 and compared directly, so
         it will always return whichever of the 30 is closest, however good or bad that match really is. It
-        works best with a similarly tightly-cropped, front-facing photo &mdash; or try one of the samples.
+        works best with a similarly tightly-cropped, front-facing photo, or try one of the samples.
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
