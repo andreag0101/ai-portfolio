@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runSegmentation, getSegmentationSamples, dataUrlToFile, type SegmentationResult } from "../lib/api";
+import { runSegmentation, getSegmentationSamples, getPrecomputed, dataUrlToFile, type SegmentationResult } from "../lib/api";
 
 function buildSteps(result: SegmentationResult): Step[] {
   return [
@@ -55,10 +55,17 @@ export default function Segmentation() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<SegmentationResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
   const [samples, setSamples] = useState<string[]>([]);
 
   useEffect(() => {
     getSegmentationSamples().then((r) => setSamples(r.samples)).catch(() => {});
+    getPrecomputed<SegmentationResult>("segmentation")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleRun(file?: File) {
@@ -69,6 +76,7 @@ export default function Segmentation() {
     try {
       const res = await runSegmentation(f, { mode, bins, flip, iterations });
       setResult(res);
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -79,6 +87,7 @@ export default function Segmentation() {
   async function handleSampleClick(dataUrl: string, i: number) {
     const file = await dataUrlToFile(dataUrl, `sample-${i}.jpg`);
     setFiles([file]);
+    setIsDefault(false);
     handleRun(file);
   }
 
@@ -191,7 +200,16 @@ export default function Segmentation() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photo to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

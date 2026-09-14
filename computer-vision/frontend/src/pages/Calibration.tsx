@@ -8,6 +8,7 @@ import {
   runCalibrationSample,
   getCalibrationPattern,
   getCalibrationSamples,
+  getPrecomputed,
   type CalibrationResult,
 } from "../lib/api";
 
@@ -79,10 +80,17 @@ export default function Calibration() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CalibrationResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
 
   useEffect(() => {
     getCalibrationPattern().then((r) => setPattern(r.pattern)).catch(() => {});
     getCalibrationSamples().then((r) => setSamples(r.samples)).catch(() => {});
+    getPrecomputed<CalibrationResult>("calibration")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleRun() {
@@ -92,6 +100,7 @@ export default function Calibration() {
     setStatusMsg("Detecting corners and solving for intrinsics — a few seconds…");
     try {
       setResult(await runCalibration(files));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -107,6 +116,7 @@ export default function Calibration() {
     setStatusMsg("Running on the bundled sample photos…");
     try {
       setResult(await runCalibrationSample());
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -187,7 +197,16 @@ export default function Calibration() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photos to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

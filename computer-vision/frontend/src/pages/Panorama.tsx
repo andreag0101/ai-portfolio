@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runPanorama, getPanoramaSample, dataUrlToFile, type PanoramaResult } from "../lib/api";
+import { runPanorama, getPanoramaSample, getPrecomputed, dataUrlToFile, type PanoramaResult } from "../lib/api";
 
 function buildSteps(result: PanoramaResult): Step[] {
   return [
@@ -45,6 +45,16 @@ export default function Panorama() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PanoramaResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
+
+  useEffect(() => {
+    getPrecomputed<PanoramaResult>("panorama")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleRun(useFiles?: File[], useConst?: number) {
     const fs = useFiles ?? files;
@@ -54,6 +64,7 @@ export default function Panorama() {
     setStatusMsg("Matching features and stitching — this can take a few seconds…");
     try {
       setResult(await runPanorama(fs, useConst ?? ransacConst));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -146,7 +157,16 @@ export default function Panorama() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photo sequence to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

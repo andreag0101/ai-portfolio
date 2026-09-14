@@ -8,6 +8,7 @@ import {
   runFaceClassify,
   getFaceAccuracyCurve,
   getFaceSamples,
+  getPrecomputed,
   dataUrlToFile,
   type FaceClassifyResult,
   type FaceAccuracyCurve,
@@ -68,12 +69,20 @@ export default function FaceRecognition() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FaceClassifyResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
   const [samples, setSamples] = useState<string[]>([]);
   const [curve, setCurve] = useState<FaceAccuracyCurve | null>(null);
 
   useEffect(() => {
     getFaceSamples().then((r) => setSamples(r.samples)).catch(() => {});
     getFaceAccuracyCurve().then(setCurve).catch(() => {});
+    getPrecomputed<{ result: FaceClassifyResult; accuracyCurve: FaceAccuracyCurve }>("face")
+      .then((r) => {
+        setResult(r.result);
+        setCurve((c) => c ?? r.accuracyCurve);
+        setIsDefault(true);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleRun(file: File) {
@@ -81,6 +90,7 @@ export default function FaceRecognition() {
     setError(null);
     try {
       setResult(await runFaceClassify(file, k));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -167,19 +177,26 @@ export default function FaceRecognition() {
             </div>
           )}
           {result && (
-            <Stepper
-              steps={buildSteps(
-                result,
-                curve ? (
-                  <div>
-                    <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                      Held-out test accuracy vs. K
-                    </p>
-                    <AccuracyChart k={curve.k} pca={curve.pca} lda={curve.lda} />
-                  </div>
-                ) : null,
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photo to run it live.
+                </p>
               )}
-            />
+              <Stepper
+                steps={buildSteps(
+                  result,
+                  curve ? (
+                    <div>
+                      <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                        Held-out test accuracy vs. K
+                      </p>
+                      <AccuracyChart k={curve.k} pca={curve.pca} lda={curve.lda} />
+                    </div>
+                  ) : null,
+                )}
+              />
+            </>
           )}
         </div>
       </div>

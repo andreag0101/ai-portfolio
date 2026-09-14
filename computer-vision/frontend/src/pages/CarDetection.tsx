@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runCarDetection, getCarDetectionSamples, dataUrlToFile, type CarDetectionResult } from "../lib/api";
+import { runCarDetection, getCarDetectionSamples, getPrecomputed, dataUrlToFile, type CarDetectionResult } from "../lib/api";
 
 function buildSteps(result: CarDetectionResult): Step[] {
   const margin = result.score - result.threshold;
@@ -23,9 +23,9 @@ function buildSteps(result: CarDetectionResult): Step[] {
       description: `A weighted vote across ${result.numRounds} boosted weak classifiers, compared to a threshold. On a held-out set of 618 test patches, this reaches ${(result.testAccuracy * 100).toFixed(1)}% accuracy.`,
       content: (
         <div className="space-y-4">
-          <div className={`rounded-lg border p-4 ${result.isCar ? "border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30" : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"}`}>
+          <div className={`rounded-lg border p-4 ${result.isCar ? "border-gold-300 bg-gold-50 dark:border-gold-800 dark:bg-gold-950/30" : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"}`}>
             <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">Prediction</p>
-            <p className={`mt-1 text-lg font-semibold ${result.isCar ? "text-emerald-700 dark:text-emerald-400" : "text-neutral-700 dark:text-neutral-300"}`}>
+            <p className={`mt-1 text-lg font-semibold ${result.isCar ? "text-gold-700 dark:text-gold-400" : "text-neutral-700 dark:text-neutral-300"}`}>
               {result.isCar ? "Car" : "Not a car"}
             </p>
             <p className="mt-1 text-xs text-neutral-500">
@@ -54,10 +54,17 @@ export default function CarDetection() {
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CarDetectionResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
   const [samples, setSamples] = useState<{ positive: string[]; negative: string[] }>({ positive: [], negative: [] });
 
   useEffect(() => {
     getCarDetectionSamples().then(setSamples).catch(() => {});
+    getPrecomputed<CarDetectionResult>("car-detection")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleRun(file: File) {
@@ -66,6 +73,7 @@ export default function CarDetection() {
     setStatusMsg("Classifying — the first request also trains the classifier, which can take about a minute…");
     try {
       setResult(await runCarDetection(file));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -147,7 +155,16 @@ export default function CarDetection() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own patch to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

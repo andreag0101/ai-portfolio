@@ -9,6 +9,7 @@ import {
   runInsert,
   getRectifySample,
   getRectifyInsertSample,
+  getPrecomputed,
   dataUrlToFile,
   type DewarpResult,
   type InsertResult,
@@ -101,6 +102,16 @@ function Straighten() {
   const [autoRun, setAutoRun] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DewarpResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
+
+  useEffect(() => {
+    getPrecomputed<DewarpResult>("homography-straighten")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleRun() {
     if (files.length === 0 || !quad) return;
@@ -108,6 +119,7 @@ function Straighten() {
     setError(null);
     try {
       setResult(await runDewarp(files[0], quad));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -152,6 +164,7 @@ function Straighten() {
           onChange={(f) => {
             setFiles(f);
             setResult(null);
+            setIsDefault(false);
           }}
         />
         <button
@@ -183,7 +196,16 @@ function Straighten() {
             Processing…
           </div>
         )}
-        {result && <Stepper steps={dewarpSteps(result)} />}
+        {result && (
+          <>
+            {isDefault && (
+              <p className="mb-3 text-sm text-neutral-500">
+                Showing the bundled sample result. Upload your own photo to run it live.
+              </p>
+            )}
+            <Stepper steps={dewarpSteps(result)} />
+          </>
+        )}
       </div>
     </div>
   );
@@ -198,6 +220,16 @@ function Insert() {
   const [autoRun, setAutoRun] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<InsertResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
+
+  useEffect(() => {
+    getPrecomputed<InsertResult>("homography-insert")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleRun() {
     if (destFiles.length === 0 || sourceFiles.length === 0 || !quad) return;
@@ -205,6 +237,7 @@ function Insert() {
     setError(null);
     try {
       setResult(await runInsert(destFiles[0], sourceFiles[0], quad));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -253,6 +286,7 @@ function Insert() {
           onChange={(f) => {
             setDestFiles(f);
             setResult(null);
+            setIsDefault(false);
           }}
         />
         <button
@@ -285,7 +319,16 @@ function Insert() {
             Processing…
           </div>
         )}
-        {result && <Stepper steps={insertSteps(result)} />}
+        {result && (
+          <>
+            {isDefault && (
+              <p className="mb-3 text-sm text-neutral-500">
+                Showing the bundled sample result. Upload your own photos to run it live.
+              </p>
+            )}
+            <Stepper steps={insertSteps(result)} />
+          </>
+        )}
       </div>
     </div>
   );

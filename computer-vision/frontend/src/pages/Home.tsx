@@ -22,7 +22,7 @@ function Avatar() {
 function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="mb-8">
-      <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">{eyebrow}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-gold-700 dark:text-gold-400">{eyebrow}</p>
       <h2 className="mt-1 text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">{title}</h2>
     </div>
   );
@@ -53,13 +53,13 @@ export default function Home() {
                 ))}
               </div>
               <div className="mt-5 flex flex-wrap justify-center gap-4 text-sm sm:justify-start">
-                <a href={`mailto:${profile.email}`} className="font-medium text-emerald-700 hover:underline dark:text-emerald-400">
+                <a href={`mailto:${profile.email}`} className="font-medium text-gold-700 hover:underline dark:text-gold-400">
                   {profile.email}
                 </a>
-                <a href={profile.linkedin} target="_blank" rel="noreferrer" className="font-medium text-emerald-700 hover:underline dark:text-emerald-400">
+                <a href={profile.linkedin} target="_blank" rel="noreferrer" className="font-medium text-gold-700 hover:underline dark:text-gold-400">
                   LinkedIn
                 </a>
-                <a href="/resume.pdf" download className="font-medium text-emerald-700 hover:underline dark:text-emerald-400">
+                <a href="/resume.pdf" download className="font-medium text-gold-700 hover:underline dark:text-gold-400">
                   Resume (PDF)
                 </a>
                 <span className="text-neutral-400 dark:text-neutral-600">{profile.location}</span>
@@ -76,7 +76,7 @@ export default function Home() {
           <p className="max-w-2xl text-neutral-600 dark:text-neutral-400">
             A collection of classical computer vision techniques, implemented from first principles &mdash;
             no relying on OpenCV's built-in solvers for the core algorithms. Pick a card marked{" "}
-            <span className="font-medium text-emerald-700 dark:text-emerald-400">Try it</span> to run it on
+            <span className="font-medium text-gold-700 dark:text-gold-400">Try it</span> to run it on
             your own images.
           </p>
           <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
@@ -160,7 +160,7 @@ export default function Home() {
                         href={l.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                        className="text-sm font-medium text-gold-700 hover:underline dark:text-gold-400"
                       >
                         {l.label} &rarr;
                       </a>

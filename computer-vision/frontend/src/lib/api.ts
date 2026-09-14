@@ -19,6 +19,18 @@ async function unwrap<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// Static, pre-computed results for each demo's sample input, served as
+// plain JSON from /public (same origin as the frontend, no backend call).
+// This is what each page shows by default, so the site still demonstrates
+// every algorithm even when the (separately-hosted) backend is slow to
+// wake from an idle sleep or briefly unreachable -- only actually running
+// a *new* photo needs the live API.
+export async function getPrecomputed<T>(id: string): Promise<T> {
+  const res = await fetch(`/precomputed/${id}.json`);
+  if (!res.ok) throw new Error(`Couldn't load the bundled sample result (${id}).`);
+  return res.json() as Promise<T>;
+}
+
 export async function dataUrlToFile(dataUrl: string, name: string): Promise<File> {
   const res = await fetch(dataUrl);
   const blob = await res.blob();

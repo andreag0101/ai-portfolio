@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runCornerMatch, getCornersSample, dataUrlToFile, type CornerMatchResult } from "../lib/api";
+import { runCornerMatch, getCornersSample, getPrecomputed, dataUrlToFile, type CornerMatchResult } from "../lib/api";
 
 function buildSteps(result: CornerMatchResult, distType: "SSD" | "NCC"): Step[] {
   return [
@@ -39,6 +39,16 @@ export default function CornerMatching() {
   const [sampleLoading, setSampleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CornerMatchResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
+
+  useEffect(() => {
+    getPrecomputed<CornerMatchResult>("corners")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleRun(file1?: File, file2?: File) {
     const f1 = file1 ?? files1[0];
@@ -48,6 +58,7 @@ export default function CornerMatching() {
     setError(null);
     try {
       setResult(await runCornerMatch(f1, f2, { sigma, distType }));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -164,7 +175,16 @@ export default function CornerMatching() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result, distType)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photo pair to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result, distType)} />
+            </>
+          )}
         </div>
       </div>
     </div>

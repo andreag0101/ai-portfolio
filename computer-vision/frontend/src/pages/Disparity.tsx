@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
 import PointCloudViewer from "../components/PointCloudViewer";
 import {
+  getPrecomputed,
   runDisparity,
   getDisparitySample,
   dataUrlToFile,
@@ -82,6 +83,16 @@ export default function Disparity() {
   const [sampleLoading, setSampleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DisparityResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
+
+  useEffect(() => {
+    getPrecomputed<DisparityResult>("disparity")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleRun(left?: File, right?: File) {
     const l = left ?? leftFile[0];
@@ -92,6 +103,7 @@ export default function Disparity() {
     try {
       const res = await runDisparity(l, r, { window: window_, dMax });
       setResult(res);
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -209,7 +221,16 @@ export default function Disparity() {
               Processing…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own stereo pair to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

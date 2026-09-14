@@ -78,7 +78,7 @@ export default function QuadPicker({ file, onQuadChange }: QuadPickerProps) {
               onQuadChange(c.quad);
             }}
             className={`overflow-hidden rounded-md border-2 transition ${
-              selected === i ? "border-emerald-500" : "border-transparent hover:border-neutral-300"
+              selected === i ? "border-gold-500" : "border-transparent hover:border-neutral-300"
             }`}
           >
             <img src={c.overlay} alt={`Option ${i + 1}`} className="h-20 w-20 object-cover" />

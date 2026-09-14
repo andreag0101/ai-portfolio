@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Purdue "Old Gold" (#CFB991), extended into a full shade ramp for text/
+   background/border contrast in both light and dark mode. */
+@theme {
+  --color-gold-50: #faf6f0;
+  --color-gold-100: #f4ebdd;
+  --color-gold-200: #e9dabe;
+  --color-gold-300: #dec79c;
+  --color-gold-400: #d1b175;
+  --color-gold-500: #c49b4f;
+  --color-gold-600: #ac8439;
+  --color-gold-700: #8a6a2e;
+  --color-gold-800: #674f22;
+  --color-gold-900: #4d3b19;
+  --color-gold-950: #2e230f;
+}
+
 html,
 body,
 #root {

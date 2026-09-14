@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import FilePicker from "../components/FilePicker";
 import ResultImage from "../components/ResultImage";
 import Stepper, { type Step } from "../components/Stepper";
-import { runTextureClassify, getTextureSamples, dataUrlToFile, type TextureResult } from "../lib/api";
+import { runTextureClassify, getTextureSamples, getPrecomputed, dataUrlToFile, type TextureResult } from "../lib/api";
 
 const CLASS_LABELS: Record<string, string> = {
   cloudy: "Cloudy",
@@ -15,9 +15,9 @@ const CLASS_LABELS: Record<string, string> = {
 function PredictionPanel({ result }: { result: TextureResult }) {
   return (
     <>
-      <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-950/30">
+      <div className="rounded-lg border border-gold-300 bg-gold-50 p-4 dark:border-gold-800 dark:bg-gold-950/30">
         <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">Predicted</p>
-        <p className="mt-1 text-lg font-semibold text-emerald-700 dark:text-emerald-400">
+        <p className="mt-1 text-lg font-semibold text-gold-700 dark:text-gold-400">
           {CLASS_LABELS[result.predicted] ?? result.predicted}
         </p>
       </div>
@@ -28,7 +28,7 @@ function PredictionPanel({ result }: { result: TextureResult }) {
           <div key={cls} className="flex items-center gap-3 text-sm">
             <span className="w-16 text-neutral-600 dark:text-neutral-400">{CLASS_LABELS[cls] ?? cls}</span>
             <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-              <div className="h-full bg-emerald-500" style={{ width: `${conf * 100}%` }} />
+              <div className="h-full bg-gold-500" style={{ width: `${conf * 100}%` }} />
             </div>
             <span className="w-10 text-right text-neutral-400">{Math.round(conf * 100)}%</span>
           </div>
@@ -82,10 +82,17 @@ export default function TextureClassification() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TextureResult | null>(null);
+  const [isDefault, setIsDefault] = useState(false);
   const [samples, setSamples] = useState<string[]>([]);
 
   useEffect(() => {
     getTextureSamples().then((r) => setSamples(r.samples)).catch(() => {});
+    getPrecomputed<TextureResult>("texture")
+      .then((r) => {
+        setResult(r);
+        setIsDefault(true);
+      })
+      .catch(() => {});
   }, []);
 
   async function handleRun(file?: File) {
@@ -95,6 +102,7 @@ export default function TextureClassification() {
     setError(null);
     try {
       setResult(await runTextureClassify(f));
+      setIsDefault(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
     } finally {
@@ -161,7 +169,16 @@ export default function TextureClassification() {
               Comparing against 922 training photos…
             </div>
           )}
-          {result && <Stepper steps={buildSteps(result)} />}
+          {result && (
+            <>
+              {isDefault && (
+                <p className="mb-3 text-sm text-neutral-500">
+                  Showing the bundled sample result. Upload your own photo to run it live.
+                </p>
+              )}
+              <Stepper steps={buildSteps(result)} />
+            </>
+          )}
         </div>
       </div>
     </div>

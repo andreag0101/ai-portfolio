@@ -165,9 +165,9 @@ export default function ProjectiveGeometry() {
         </div>
 
         <div className="space-y-4">
-          <div className={`rounded-lg border p-4 ${hit ? "border-emerald-300 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/30" : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"}`}>
+          <div className={`rounded-lg border p-4 ${hit ? "border-gold-300 bg-gold-50 dark:border-gold-800 dark:bg-gold-950/30" : "border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"}`}>
             <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">Result</p>
-            <p className={`mt-1 text-lg font-semibold ${hit ? "text-emerald-700 dark:text-emerald-400" : "text-neutral-700 dark:text-neutral-300"}`}>
+            <p className={`mt-1 text-lg font-semibold ${hit ? "text-gold-700 dark:text-gold-400" : "text-neutral-700 dark:text-neutral-300"}`}>
               {hit ? "Aim is correct" : "Aim misses"}
             </p>
             <p className="mt-1 text-sm text-neutral-500">&alpha; = {angleDeg.toFixed(1)}&deg;</p>
