@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 const SECTIONS = [
   { id: "about", label: "About" },
   { id: "projects", label: "Projects" },
+  { id: "deep-learning", label: "Deep Learning" },
   { id: "education", label: "Education" },
   { id: "career", label: "Career" },
 ];

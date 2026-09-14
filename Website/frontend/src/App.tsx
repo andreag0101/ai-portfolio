@@ -11,6 +11,8 @@ import TextureClassification from "./pages/TextureClassification";
 import FaceRecognition from "./pages/FaceRecognition";
 import Calibration from "./pages/Calibration";
 import CarDetection from "./pages/CarDetection";
+import DeepLearning from "./pages/DeepLearning";
+import DeepLearningProject from "./pages/DeepLearningProject";
 
 export default function App() {
   return (
@@ -28,6 +30,8 @@ export default function App() {
         <Route path="/face" element={<FaceRecognition />} />
         <Route path="/calibration" element={<Calibration />} />
         <Route path="/car-detection" element={<CarDetection />} />
+        <Route path="/deep-learning" element={<DeepLearning />} />
+        <Route path="/deep-learning/:slug" element={<DeepLearningProject />} />
       </Routes>
     </div>
   );

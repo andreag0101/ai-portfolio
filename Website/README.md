@@ -93,12 +93,12 @@ OpenCV, scikit-learn), so it needs an actual running Python process, not
 static/serverless hosting. Deployed as two separate services:
 
 - **Backend** on [Render](https://render.com): a `render.yaml` blueprint at
-  the repo root defines the web service (`rootDir: computer-vision/backend`,
+  the repo root defines the web service (`rootDir: Website/backend`,
   pinned to Python 3.11 via `.python-version`). Render → New → Blueprint →
   point it at this repo. The allowed CORS origin for the deployed frontend
   is set via the `ALLOWED_ORIGINS` env var (comma-separated), not hardcoded.
 - **Frontend** on [Vercel](https://vercel.com): import the repo, set
-  **Root Directory** to `computer-vision/frontend` (Vite preset
+  **Root Directory** to `Website/frontend` (Vite preset
   auto-detected), and set the `VITE_API_BASE` env var to the deployed
   backend's URL plus `/api` (e.g. `https://<service>.onrender.com/api`) --
   in dev this defaults to `/api`, relying on the Vite proxy above, since

@@ -4,7 +4,9 @@ import ProjectCard from "../components/ProjectCard";
 import FlipCard from "../components/FlipCard";
 import PanoramaStrip from "../components/PanoramaStrip";
 import FeaturedPointCloud from "../components/FeaturedPointCloud";
+import DLProjectCard from "../components/dl/DLProjectCard";
 import { categories } from "../lib/projects";
+import { dlProjects } from "../lib/deepLearningProjects";
 import { profile, education, experience } from "../lib/profile";
 
 const FEATURED_IDS = new Set(["stereo-disparity", "planar-rectification", "panorama"]);
@@ -87,6 +89,36 @@ export default function Home() {
 
           <FeaturedProjects />
           <AllProjects />
+        </div>
+      </section>
+
+      {/* Deep Learning */}
+      <section id="deep-learning" className="scroll-mt-16 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="mx-auto max-w-5xl px-6 py-14">
+          <SectionHeading eyebrow="Coursework" title="Deep Learning — ECE 60146" />
+          <p className="max-w-2xl text-neutral-600 dark:text-neutral-400">
+            Eight projects compiled from Purdue's graduate Deep Learning course &mdash; hand-derived
+            backpropagation and optimizers, CNN architecture ablations, object detection, semantic
+            segmentation, GANs vs. diffusion models, and Transformer translation.
+          </p>
+          <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
+            These are write-ups of results already trained and evaluated during the course &mdash; figures,
+            tables, and full PDF reports, not a live demo.
+          </p>
+
+          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {dlProjects.slice(0, 6).map((p) => (
+              <DLProjectCard key={p.slug} project={p} />
+            ))}
+          </div>
+          <div className="mt-6">
+            <Link
+              to="/deep-learning"
+              className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+            >
+              See all {dlProjects.length} Deep Learning projects &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
