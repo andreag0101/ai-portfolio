@@ -13,6 +13,7 @@ import Calibration from "./pages/Calibration";
 import CarDetection from "./pages/CarDetection";
 import DeepLearning from "./pages/DeepLearning";
 import DeepLearningProject from "./pages/DeepLearningProject";
+import ResearchAssistant from "./pages/ResearchAssistant";
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/car-detection" element={<CarDetection />} />
         <Route path="/deep-learning" element={<DeepLearning />} />
         <Route path="/deep-learning/:slug" element={<DeepLearningProject />} />
+        <Route path="/research-assistant" element={<ResearchAssistant />} />
       </Routes>
     </div>
   );

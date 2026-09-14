@@ -1,0 +1,116 @@
+{
+  "suggested": [
+    {
+      "question": "What FID score did the from-scratch DCGAN get compared to the pretrained diffusion model?",
+      "answer": "The DCGAN trained from scratch on CelebA scored an FID of 117.07, versus 70.64 for a pretrained diffusion model (lower is better) -- nearly a 2x gap. It shows up visually too: the diffusion samples have more coherent lighting, hair texture, and background detail at the same 64x64 resolution.",
+      "citations": [
+        {
+          "title": "GANs vs. Diffusion: Face Generation",
+          "page": 6,
+          "snippet": "Model FID Score: GAN 117.07, Diffusion 70.64 (Table 1: FID Scores)",
+          "pdfHref": "/deep-learning/reports/hw09-gan-diffusion.pdf#page=6",
+          "projectHref": "/deep-learning/gan-diffusion"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "How much faster was a PyTorch DataLoader than a naive getitem loop?",
+      "answer": "Looping through __getitem__ by hand to load and augment 1000 images took 2.4449s. The fastest DataLoader configuration found by sweeping batch size and worker count (batch=64, 6 workers) processed the same 1000 images in 0.07127s -- about 34x faster.",
+      "citations": [
+        {
+          "title": "PyTorch Datasets & DataLoaders",
+          "page": 5,
+          "snippet": "It takes 2.4449 seconds to load and augment all 1000 images using getitem in a loop...",
+          "pdfHref": "/deep-learning/reports/hw02-datasets-dataloaders.pdf#page=5",
+          "projectHref": "/deep-learning/fundamentals"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "Which optimizer converged fastest for the multi-neuron model: SGD, SGD+Momentum, or Adam?",
+      "answer": "Adam. Across the learning rates tested, plain SGD converged to a visibly higher, noisier loss (or failed to converge at all), while Adam consistently reached the lowest final loss fastest -- SGD+Momentum was more stable but slower to get there.",
+      "citations": [
+        {
+          "title": "Backpropagation & Optimizers, From Scratch",
+          "page": 15,
+          "snippet": "Overall, the Adam optimizer outperformed the other two models.",
+          "pdfHref": "/deep-learning/reports/hw03-backprop-optimizers.pdf#page=15",
+          "projectHref": "/deep-learning/backprop-optimizers"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "How did the CNN's cat-classification accuracy change with network depth on CIFAR-10?",
+      "answer": "Cat was the weakest class throughout, but it improved the most with depth: 40% accuracy on the shallowest 2-conv-layer network, rising to 61% at 3 layers and 57% at 8 layers, versus an overall accuracy climb of 61% to 76% to 78% across the same three depths.",
+      "citations": [
+        {
+          "title": "CNN Architecture Ablations: Depth",
+          "page": 4,
+          "snippet": "Net1 Net2 Net3 -- cat: 40% 61% 57% (Table 2: Class-wise performance)",
+          "pdfHref": "/deep-learning/reports/hw05-cnn-depth.pdf#page=4",
+          "projectHref": "/deep-learning/cnn-architecture-ablations"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "How did classification accuracy change as scenes got more cluttered with multiple objects?",
+      "answer": "It dropped monotonically as object multiplicity increased, even though the label set never changed: 56.09% on the single-instance dataset, 53.98% with multiple instances of the same class, and 46.31% with multiple instances from different classes crowding the frame.",
+      "citations": [
+        {
+          "title": "Custom CNN Classifier & Dataset Design",
+          "page": 10,
+          "snippet": "Accuracy: 56.09% / 53.98% / 46.31% (Table 3: Accuracy, single / multi-same / multi-diff instance)",
+          "pdfHref": "/deep-learning/reports/hw04-cnn-dataset-design.pdf#page=10",
+          "projectHref": "/deep-learning/cnn-dataset-design"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "What anchor boxes and grid size did the from-scratch object detector use?",
+      "answer": "An S x S grid (8x8) over each image, with 5 candidate anchor box aspect ratios per cell. Each ground-truth box is assigned to the grid cell containing its center and the anchor whose aspect ratio is closest to its own, then encoded as a presence flag, a center displacement, a height/width, and a one-hot class label.",
+      "citations": [
+        {
+          "title": "Object Detection From Scratch on COCO",
+          "page": 5,
+          "snippet": "Find index of anchor box with aspect ratio closest to bbox aspect ratio... yolo_tensor[y_grid, x_grid, anchor_idx, :]",
+          "pdfHref": "/deep-learning/reports/hw07-object-detection.pdf#page=5",
+          "projectHref": "/deep-learning/object-detection"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "Did adding ASPP improve the semantic segmentation model's loss?",
+      "answer": "Only marginally. Adding Atrous Spatial Pyramid Pooling to the mUNet architecture left the loss curve's start, end, and downward trend close to the baseline without ASPP -- multi-scale context helped more in combination with a properly weighted Dice loss term than on its own.",
+      "citations": [
+        {
+          "title": "Semantic Segmentation: mUNet + ASPP",
+          "page": 2,
+          "snippet": "When ASPP is added to the mUnet architecture, there is not much change in the loss curve.",
+          "pdfHref": "/deep-learning/reports/hw08-semantic-segmentation.pdf#page=2",
+          "projectHref": "/deep-learning/semantic-segmentation"
+        }
+      ],
+      "mode": "generated"
+    },
+    {
+      "question": "Post-LayerNorm vs. pre-LayerNorm: which Transformer translated better?",
+      "answer": "The post-LayerNorm model (FG) won decisively. It reached a mean Levenshtein (word-edit) distance of 0.83 against reference translations, versus 4.58 for the pre-LayerNorm model, and produced exact or near-exact matches in several cases where PreLN's outputs collapsed to short, mostly-empty sequences.",
+      "citations": [
+        {
+          "title": "Transformer Machine Translation: Post-LN vs. Pre-LN",
+          "page": 3,
+          "snippet": "The FC model had a lower average distance (0.83 vs. 4.58), and its median distance was also lower (1.00 compared to 5.00).",
+          "pdfHref": "/deep-learning/reports/hw10-transformer-translation.pdf#page=3",
+          "projectHref": "/deep-learning/transformer-translation"
+        }
+      ],
+      "mode": "generated"
+    }
+  ]
+}

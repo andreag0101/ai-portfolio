@@ -6,7 +6,7 @@ export const profile = {
   linkedin: "https://linkedin.com/in/goh-andrea",
   bio: [
     "I currently work as an AI Development Intern at ArgonDigital, where I build RAG-based LLM applications and implement AI solutions across platforms. I recently graduated from Purdue University with a Master's degree in Computer Engineering, specializing in AI/ML, following an undergraduate degree in Aeronautical Engineering with a focus on Controls and Automation. As a Computer Vision Research Assistant at Purdue's Robotic Vision Lab, I develop multimodal transformer models and 3D reconstruction pipelines from first principles.",
-    "I enjoy tackling challenging problems by breaking them down and building solutions from the ground up. The projects below reflect that approach, implementing classical computer vision algorithms such as homography, stereo geometry, and feature matching from their underlying mathematics rather than relying on high-level library calls. This has given me a deeper understanding of how these systems work and the ability to reason through and implement complex algorithms independently.",
+    "I enjoy tackling challenging problems by breaking them down and building solutions from the ground up. The 11 computer vision demos, 9 deep learning projects, and retrieval-augmented research assistant below reflect that approach: classical computer vision algorithms such as homography, stereo geometry, and feature matching implemented from their underlying mathematics rather than high-level library calls, and a RAG pipeline with hand-rolled retrieval rather than an off-the-shelf vector database. This has given me a deeper understanding of how these systems work and the ability to reason through and implement complex algorithms independently.",
   ],
 };
 
@@ -65,7 +65,7 @@ export const experience: ExperienceEntry[] = [
     bullets: [
       "Building a RAG-based chat-with-AI feature on AWS Bedrock for grounded, context-aware document and project queries.",
       "Improved LLM-based requirements generation through prompt engineering and multi-model benchmarking on quality, consistency, latency, and cost.",
-      "Designed and generalized an AI Output Scoring System — combining deterministic checks with LLM-based scoring — into a configurable tool usable across use cases.",
+      "Designed and generalized an AI Output Scoring System, combining deterministic checks with LLM-based scoring, into a configurable tool usable across use cases.",
     ],
   },
   {
@@ -76,7 +76,7 @@ export const experience: ExperienceEntry[] = [
     logo: "/logos/purdue.jpg",
     bullets: [
       "Built a custom tokenizer for a multimodal transformer that generates unseen sensor data across modalities, conditioned on sparse, incomplete inputs.",
-      "Developed a 3D stereo reconstruction pipeline from scratch using classical vision theory and plain mathematics — no OpenCV or other CV libraries.",
+      "Developed a 3D stereo reconstruction pipeline from scratch using classical vision theory and plain mathematics, with no OpenCV or other CV libraries.",
       "Analyzed multimodal sensor data (LiDAR, RGB, IMU) to improve model robustness under real-world distribution shift for self-driving applications.",
     ],
   },

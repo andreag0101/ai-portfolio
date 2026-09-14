@@ -10,6 +10,34 @@ car/non-car patches, and a curated sample input per demo) is bundled under
 `backend/data/` so the whole thing runs standalone — no external files or
 uploads required to try any of it.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Vercel["Vercel (static hosting)"]
+        UI["React + TS UI<br/>(Vite, Tailwind)"]
+    end
+    subgraph Render["Render (long-running Python process)"]
+        API["FastAPI"]
+        CV["cv_algorithms/"]
+        RAGENGINE["rag/ (retrieval + generation)"]
+        API --> CV
+        API --> RAGENGINE
+    end
+    Bundled["Bundled precomputed JSON<br/>(public/precomputed/, data/rag/)"]
+    Claude["Claude Haiku API"]
+
+    UI -- "upload a photo / ask a question" --> API
+    UI -- "default sample view (no backend call)" --> Bundled
+    RAGENGINE -. "only if ANTHROPIC_API_KEY is set" .-> Claude
+```
+
+The frontend and backend are deployed as two separate services (see
+[Deployment](#deployment)) since the backend does real per-request compute
+and can't run as static/serverless hosting. Every CV demo also ships a
+bundled precomputed result, so the site still demonstrates every algorithm
+even when the backend is slow to wake from an idle sleep.
+
 ## The 11 demos
 
 - **Projective Geometry Playground** — point-line duality (cross products) as
@@ -51,10 +79,57 @@ extraction, a sort-direction bug that would greedily commit the *worst*
 feature matches first) — each is documented with a before/after explanation
 in the relevant module under `backend/app/cv_algorithms/`.
 
+## AI Engineering: Research Assistant (RAG)
+
+A retrieval-augmented Q&A assistant (`/research-assistant`) over the 10
+technical write-up PDFs behind the Deep Learning project pages (555 chunks
+total). Built the same way as everything else in this repo: no vector
+database, no LangChain.
+
+```mermaid
+flowchart LR
+    PDFs["10 write-up PDFs"] -->|"gen_rag_index.py, offline"| Chunks["chunks.json"]
+    Chunks --> Vec["TfidfVectorizer"]
+    Vec --> Vectors["doc_vectors.npz"]
+
+    Question["user question"] -->|live| Retrieve["cosine similarity<br/>(hand-rolled, retrieval.py)"]
+    Vectors --> Retrieve
+    Retrieve --> TopK["top-k chunks + citations"]
+    TopK --> Gen{"ANTHROPIC_API_KEY set?"}
+    Gen -- yes --> Claude["Claude Haiku:<br/>grounded, cited answer"]
+    Gen -- no --> Extract["extractive fallback:<br/>top passage shown directly"]
+```
+
+- **Indexing** (`backend/gen_rag_index.py`, offline): each PDF is extracted
+  page by page (`pypdf`), split into overlapping word-bounded chunks, and
+  vectorized with a `TfidfVectorizer` -- fit once and bundled under
+  `backend/data/rag/` (`chunks.json`, `vectorizer.pkl`, `doc_vectors.npz`) so
+  the deployed backend never parses a PDF at runtime.
+- **Retrieval** (`app/rag/retrieval.py`, live): the query is vectorized with
+  the same fitted vectorizer, then ranked against every chunk by a
+  hand-rolled cosine similarity (a plain sparse dot product, since TF-IDF
+  vectors are already L2-normalized) -- top-k, no ANN index needed at this
+  corpus size.
+- **Generation** (`app/rag/generation.py`, live): the top chunks are handed
+  to Claude Haiku to synthesize a short, cited answer. If no
+  `ANTHROPIC_API_KEY` is configured for a deployment, the endpoint falls
+  back to returning the top retrieved passage directly instead of failing --
+  the retrieval half of the pipeline needs no API key at all.
+- A handful of **suggested questions** (`backend/gen_rag_suggested.py`) ship
+  as hand-checked, precomputed answers so the page has good default content
+  without a live model call, the same "bundled sample" philosophy as every
+  CV demo above.
+- The public `/api/rag/ask` endpoint is rate-limited per IP (in-memory,
+  fine for one instance) since it can call a paid API.
+
+Re-run `gen_rag_index.py` (needs `pip install pypdf` locally; not a runtime
+dependency) whenever a write-up PDF changes.
+
 ## Layout
 
 - `backend/` — FastAPI app.
   - `app/cv_algorithms/` — the ported, vectorized algorithm code.
+  - `app/rag/` — the Research Assistant's retrieval + generation code.
   - `app/routers/` — FastAPI endpoints exposing each algorithm.
   - `data/` — bundled sample datasets each demo needs to run (see below).
 - `frontend/` — Vite + React + TypeScript + Tailwind UI.
@@ -86,6 +161,26 @@ npm run dev
 Open http://localhost:5173. The Vite dev server proxies `/api/*` to the
 backend on port 8000 (see `frontend/vite.config.ts`).
 
+## Tests & CI
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+pytest -v
+```
+
+Backend tests (`backend/tests/`) cover the RAG module specifically: chunking
+edge cases, citation/href formatting, and -- run against the real bundled
+index, not a fixture -- retrieval *quality* on a set of known-good queries,
+which is what actually caught a ranking regression during development (see
+`test_rag_retrieval.py`). A FastAPI `TestClient` smoke test hits every
+router's cheap endpoints (skipping the ones that train a classifier on first
+request) to catch app-level startup failures.
+
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs `pytest` on
+every push/PR, plus `npm run lint` and `npm run build` (which includes a
+full `tsc` type-check) for the frontend.
+
 ## Deployment
 
 The backend does real per-request compute (SIFT, RANSAC, LM refinement,
@@ -97,6 +192,10 @@ static/serverless hosting. Deployed as two separate services:
   pinned to Python 3.11 via `.python-version`). Render → New → Blueprint →
   point it at this repo. The allowed CORS origin for the deployed frontend
   is set via the `ALLOWED_ORIGINS` env var (comma-separated), not hardcoded.
+  Optionally set `ANTHROPIC_API_KEY` to turn on live generation for the
+  Research Assistant page; without it, that page still works (retrieval is
+  always live), just answering with the retrieved passage instead of a
+  synthesized one.
 - **Frontend** on [Vercel](https://vercel.com): import the repo, set
   **Root Directory** to `Website/frontend` (Vite preset
   auto-detected), and set the `VITE_API_BASE` env var to the deployed
@@ -125,6 +224,7 @@ against a reference set, or need a known-good sample input at runtime:
 | `data/panorama/{1..5}.jpg` | Panorama stitching (a 5-photo left-to-right sequence) | ~500 KB |
 | `data/segmentation/` | Image segmentation (4 sample photos: dog, flower, tower, moon) | ~1 MB |
 | `data/texture/samples/` | Texture classification (1 held-out test photo per weather class) | ~70 KB |
+| `data/rag/` | Research Assistant (precomputed chunks, TF-IDF vectorizer, chunk vectors, suggested Q&A) | ~1.4 MB |
 
 The first request to the texture, face, and car-detection endpoints trains or
 builds a cache in memory (a few seconds to ~1 minute depending on the demo);

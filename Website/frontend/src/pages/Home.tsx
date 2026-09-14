@@ -6,10 +6,11 @@ import PanoramaStrip from "../components/PanoramaStrip";
 import FeaturedPointCloud from "../components/FeaturedPointCloud";
 import DLProjectCard from "../components/dl/DLProjectCard";
 import { categories } from "../lib/projects";
-import { dlProjects } from "../lib/deepLearningProjects";
+import { dlCategories, dlProjects } from "../lib/deepLearningProjects";
 import { profile, education, experience } from "../lib/profile";
 
 const FEATURED_IDS = new Set(["stereo-disparity", "planar-rectification", "panorama"]);
+const DL_FEATURED_IDS = new Set(["gan-diffusion", "object-detection"]);
 
 function Avatar() {
   return (
@@ -74,50 +75,64 @@ export default function Home() {
       {/* Projects */}
       <section id="projects" className="scroll-mt-16 border-b border-neutral-200 dark:border-neutral-800">
         <div className="mx-auto max-w-5xl px-6 py-14">
-          <SectionHeading eyebrow="Projects" title="Computer Vision, from scratch" />
-          <p className="max-w-2xl text-neutral-600 dark:text-neutral-400">
-            A collection of classical computer vision techniques, implemented from first principles &mdash;
-            no relying on OpenCV's built-in solvers for the core algorithms. Pick a card marked{" "}
-            <span className="font-medium text-gold-700 dark:text-gold-400">Try it</span> to run it on
-            your own images.
-          </p>
-          <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
-            Every project below was built using traditional computer vision methods and mathematics implemented
-            by hand &mdash; OpenCV (or any other CV library) is used only where explicitly noted, e.g. as a
-            baseline for comparison.
-          </p>
+          <SectionHeading eyebrow="Portfolio" title="Projects" />
 
-          <FeaturedProjects />
-          <AllProjects />
-        </div>
-      </section>
+          <div>
+            <h3 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Computer Vision, from scratch
+            </h3>
+            <p className="mt-3 max-w-2xl text-neutral-600 dark:text-neutral-400">
+              A collection of classical computer vision techniques, implemented from first principles: no
+              relying on OpenCV's built-in solvers for the core algorithms. Pick a card marked{" "}
+              <span className="font-medium text-gold-700 dark:text-gold-400">Try it</span> to run it on
+              your own images.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
+              Every project below was built using traditional computer vision methods and mathematics
+              implemented by hand. OpenCV (or any other CV library) is used only where explicitly noted,
+              e.g. as a baseline for comparison.
+            </p>
 
-      {/* Deep Learning */}
-      <section id="deep-learning" className="scroll-mt-16 border-b border-neutral-200 dark:border-neutral-800">
-        <div className="mx-auto max-w-5xl px-6 py-14">
-          <SectionHeading eyebrow="Coursework" title="Deep Learning — ECE 60146" />
-          <p className="max-w-2xl text-neutral-600 dark:text-neutral-400">
-            Eight projects compiled from Purdue's graduate Deep Learning course &mdash; hand-derived
-            backpropagation and optimizers, CNN architecture ablations, object detection, semantic
-            segmentation, GANs vs. diffusion models, and Transformer translation.
-          </p>
-          <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
-            These are write-ups of results already trained and evaluated during the course &mdash; figures,
-            tables, and full PDF reports, not a live demo.
-          </p>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {dlProjects.slice(0, 6).map((p) => (
-              <DLProjectCard key={p.slug} project={p} />
-            ))}
+            <FeaturedProjects />
+            <AllProjects />
           </div>
-          <div className="mt-6">
-            <Link
-              to="/deep-learning"
-              className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
-            >
-              See all {dlProjects.length} Deep Learning projects &rarr;
-            </Link>
+
+          <div className="mt-16">
+            <h3 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              Deep Learning
+            </h3>
+            <p className="mt-3 max-w-2xl text-neutral-600 dark:text-neutral-400">
+              A collection of deep learning projects, from hand-derived backpropagation to generative
+              models, implemented and trained in PyTorch: from scratch where the point is understanding
+              the mechanics, and on top of established architectures where the point is the result.
+            </p>
+            <p className="mt-3 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">
+              Each project below shows the trained results: figures, tables, and a full technical
+              write-up. Nothing here runs live inference in your browser.
+            </p>
+
+            <DLFeaturedProjects />
+            <DLAllProjects />
+          </div>
+
+          <div className="mt-16">
+            <h3 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">
+              AI Engineering
+            </h3>
+            <p className="mt-3 max-w-2xl text-neutral-600 dark:text-neutral-400">
+              Retrieval and generation systems, built the same way as everything else here: from the
+              ground up, and with the trade-offs made explicit.
+            </p>
+
+            <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
+              <FeaturedCard
+                title="Research Assistant (RAG)"
+                blurb="Ask questions across all 10 deep-learning write-ups on this site. From-scratch TF-IDF retrieval, Claude for grounded, cited generation."
+                path="/research-assistant"
+              >
+                <RagPreview />
+              </FeaturedCard>
+            </div>
           </div>
         </div>
       </section>
@@ -248,11 +263,13 @@ function FeaturedCard({
   title,
   blurb,
   path,
+  cta = "Try it",
   children,
 }: {
   title: string;
   blurb: string;
   path: string;
+  cta?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -268,8 +285,91 @@ function FeaturedCard({
         to={path}
         className="mt-3 inline-block rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
       >
-        Try it &rarr;
+        {cta} &rarr;
       </Link>
+    </div>
+  );
+}
+
+function RagPreview() {
+  return (
+    <div className="flex h-[240px] flex-col justify-center gap-2.5 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
+      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+        &ldquo;Which optimizer converged fastest for the multi-neuron model?&rdquo;
+      </p>
+      <span className="inline-flex w-fit items-center rounded-full bg-gold-50 px-2 py-0.5 text-xs font-medium text-gold-700 ring-1 ring-inset ring-gold-200 dark:bg-gold-950/30 dark:text-gold-400 dark:ring-gold-800">
+        Generated, grounded in retrieved excerpts
+      </span>
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        Adam. Across the learning rates tested, plain SGD converged to a visibly higher, noisier loss
+        while Adam consistently reached the lowest final loss fastest&hellip;
+      </p>
+      <p className="text-xs text-neutral-400">Source: Backpropagation &amp; Optimizers, From Scratch, p.15</p>
+    </div>
+  );
+}
+
+function DLFeaturedProjects() {
+  return (
+    <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <FeaturedCard
+        title="GANs vs. Diffusion: Face Generation"
+        blurb="A DCGAN trained from scratch on CelebA, benchmarked against a pretrained diffusion model by Fréchet Inception Distance. Click to flip."
+        path="/deep-learning/gan-diffusion"
+        cta="View project"
+      >
+        <FlipCard
+          front="/deep-learning/gan-diffusion/gan-faces-wide.png"
+          back="/deep-learning/gan-diffusion/diffusion-faces-wide.png"
+          frontLabel="DCGAN"
+          backLabel="Diffusion"
+          height={240}
+        />
+      </FeaturedCard>
+
+      <FeaturedCard
+        title="Object Detection From Scratch on COCO"
+        blurb="A single-shot detector's own predictions (green) against ground truth (red) for pizza, cat, and bus. Drag to pan."
+        path="/deep-learning/object-detection"
+        cta="View project"
+      >
+        <PanoramaStrip src="/deep-learning/object-detection/detections-strip.jpg" height={240} />
+      </FeaturedCard>
+    </div>
+  );
+}
+
+function DLAllProjects() {
+  const [show, setShow] = useState(false);
+
+  const filteredCategories = dlCategories
+    .map((cat) => ({ ...cat, projects: dlProjects.filter((p) => p.category === cat.id && !DL_FEATURED_IDS.has(p.slug)) }))
+    .filter((cat) => cat.projects.length > 0);
+
+  return (
+    <div className="mt-10">
+      <button
+        onClick={() => setShow((s) => !s)}
+        className="rounded-md bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-700 transition hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+      >
+        {show ? "Hide remaining projects" : `See all projects (${dlProjects.length})`}
+      </button>
+
+      {show && (
+        <div className="mt-8 space-y-12">
+          {filteredCategories.map((cat) => (
+            <div key={cat.id}>
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{cat.title}</h3>
+              <p className="mt-1 max-w-2xl text-sm text-neutral-500 dark:text-neutral-500">{cat.description}</p>
+              <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {cat.projects.map((project) => (
+                  <DLProjectCard key={project.slug} project={project} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
