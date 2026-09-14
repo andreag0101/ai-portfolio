@@ -53,7 +53,7 @@ and can't run as static/serverless hosting. Every CV demo also ships a
 bundled precomputed result, so the site still demonstrates every algorithm
 even when the backend is slow to wake from an idle sleep.
 
-## The 11 demos
+## The 10 demos
 
 - **Projective Geometry Playground** — point-line duality (cross products) as
   a live drag-the-triangle/drag-the-aim canvas.
