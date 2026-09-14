@@ -86,6 +86,28 @@ npm run dev
 Open http://localhost:5173. The Vite dev server proxies `/api/*` to the
 backend on port 8000 (see `frontend/vite.config.ts`).
 
+## Deployment
+
+The backend does real per-request compute (SIFT, RANSAC, LM refinement,
+OpenCV, scikit-learn), so it needs an actual running Python process, not
+static/serverless hosting. Deployed as two separate services:
+
+- **Backend** on [Render](https://render.com): a `render.yaml` blueprint at
+  the repo root defines the web service (`rootDir: computer-vision/backend`,
+  pinned to Python 3.11 via `.python-version`). Render → New → Blueprint →
+  point it at this repo. The allowed CORS origin for the deployed frontend
+  is set via the `ALLOWED_ORIGINS` env var (comma-separated), not hardcoded.
+- **Frontend** on [Vercel](https://vercel.com): import the repo, set
+  **Root Directory** to `computer-vision/frontend` (Vite preset
+  auto-detected), and set the `VITE_API_BASE` env var to the deployed
+  backend's URL plus `/api` (e.g. `https://<service>.onrender.com/api`) --
+  in dev this defaults to `/api`, relying on the Vite proxy above, since
+  frontend and backend aren't on the same origin in production.
+
+After both are live, set `ALLOWED_ORIGINS` on the Render service to the
+Vercel URL and redeploy. Render's free tier spins down after inactivity, so
+the first request after idle time can take 30-60s to wake up.
+
 ## Data
 
 `backend/data/` bundles what's needed for the demos that train, compare

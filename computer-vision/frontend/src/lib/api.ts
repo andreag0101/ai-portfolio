@@ -1,4 +1,9 @@
-const API_BASE = "/api";
+// In dev, "/api" is proxied to localhost:8000 (see vite.config.ts). In
+// production the frontend and backend are deployed separately, so this
+// points at the deployed backend's URL via a build-time env var (set
+// VITE_API_BASE, e.g. "https://<render-service>.onrender.com/api", in the
+// hosting provider's project settings).
+const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? "/api";
 
 async function unwrap<T>(res: Response): Promise<T> {
   if (!res.ok) {

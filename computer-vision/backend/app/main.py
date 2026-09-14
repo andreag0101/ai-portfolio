@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,9 +17,15 @@ from .routers import (
 
 app = FastAPI(title="ECE 661 Computer Vision Portfolio API")
 
+# Local dev origins are always allowed; the deployed frontend's origin is
+# added via the ALLOWED_ORIGINS env var (comma-separated) so it can be set
+# per-environment without a code change/redeploy.
+_default_origins = ["http://localhost:5173", "http://127.0.0.1:5173"]
+_extra_origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=_default_origins + _extra_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
