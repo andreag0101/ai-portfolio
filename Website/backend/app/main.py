@@ -1,3 +1,4 @@
+import logging
 import os
 
 from fastapi import FastAPI
@@ -15,6 +16,10 @@ from .routers import (
     car_detection,
     rag,
 )
+
+# INFO is off by default in Python; without this, app.rag's per-request
+# logging (see app/rag/logging_utils.py) silently never reaches stdout.
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
 app = FastAPI(title="ECE 661 Computer Vision Portfolio API")
 

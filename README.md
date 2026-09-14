@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/andreag0101/ai-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/andreag0101/ai-portfolio/actions/workflows/ci.yml)
 
+**Live demo:** [ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app](https://ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app/) *(currently gated by Vercel's Deployment Protection -- see [`Website/README.md`](Website/README.md) note)*
+
 A collection of AI/ML projects — computer vision, deep learning, and general
 AI engineering (RAG, agents, etc.) — each in its own subdirectory with its own
 README and setup instructions.

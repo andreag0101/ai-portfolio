@@ -1,0 +1,14 @@
+__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.pytest_cache/
+tests/
+gen_precomputed.py
+gen_rag_index.py
+gen_rag_suggested.py
+requirements-dev.txt
+.git/
+.DS_Store

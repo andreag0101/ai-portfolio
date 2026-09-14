@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from ..rag import retrieval
 from ..rag.generation import generate_answer
+from ..rag.logging_utils import log_ask
 
 router = APIRouter(prefix="/api/rag", tags=["rag"])
 
@@ -53,8 +54,13 @@ async def suggested():
 async def ask(body: AskRequest, request: Request):
     _check_rate_limit(request.client.host if request.client else "unknown")
 
-    chunks = retrieval.retrieve(body.question, k=5)
-    result = generate_answer(body.question, chunks)
-    citations = [retrieval.to_citation(c) for c in chunks[:3]] if result["mode"] != "none" else []
+    with log_ask(body.question) as log:
+        chunks = retrieval.retrieve(body.question, k=5)
+        result = generate_answer(body.question, chunks)
+        citations = [retrieval.to_citation(c) for c in chunks[:3]] if result["mode"] != "none" else []
+
+        log["mode"] = result["mode"]
+        log["top_score"] = round(chunks[0].score, 4) if chunks else None
+        log["num_citations"] = len(citations)
 
     return {"answer": result["answer"], "mode": result["mode"], "citations": citations}

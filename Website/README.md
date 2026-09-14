@@ -1,5 +1,13 @@
 # Computer Vision Portfolio
 
+**Live demo:** [ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app](https://ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app/)
+<!-- NOTE: this URL currently redirects to Vercel's SSO login for anyone
+     without access to the andreag0101 Vercel account/team -- it needs
+     Vercel's Deployment Protection turned off (or the stable production
+     domain used instead of this per-deployment preview URL) before it
+     actually works as a public link. See the chat response this was
+     added in for details. -->
+
 Interactive web demos of classical computer vision techniques, ported from
 coursework (ECE 661, Purdue) into a from-scratch implementation of each
 algorithm. Every demo can be stepped through stage by stage instead of only
@@ -120,7 +128,13 @@ flowchart LR
   without a live model call, the same "bundled sample" philosophy as every
   CV demo above.
 - The public `/api/rag/ask` endpoint is rate-limited per IP (in-memory,
-  fine for one instance) since it can call a paid API.
+  fine for one instance) since it can call a paid API, and logs one
+  structured line per request (question, mode, top retrieval score,
+  latency -- see `app/rag/logging_utils.py`) for basic observability.
+
+See [`app/rag/MODEL_CARD.md`](backend/app/rag/MODEL_CARD.md) for intended
+use, data, method, and known limitations (TF-IDF vs. dense retrieval,
+corpus size, what the CI regression tests do and don't cover).
 
 Re-run `gen_rag_index.py` (needs `pip install pypdf` locally; not a runtime
 dependency) whenever a write-up PDF changes.
@@ -160,6 +174,24 @@ npm run dev
 
 Open http://localhost:5173. The Vite dev server proxies `/api/*` to the
 backend on port 8000 (see `frontend/vite.config.ts`).
+
+**Backend, via Docker** (alternative to the venv steps above):
+
+```bash
+cd backend
+docker compose up --build
+```
+
+Serves the same API on http://localhost:8000. `docker-compose.yml` passes
+through `ANTHROPIC_API_KEY` from your shell environment if set (optional --
+see [AI Engineering: Research Assistant](#ai-engineering-research-assistant-rag)
+above). The `Dockerfile` alone (`docker build -t cv-portfolio-api .`) works
+too if you don't want Compose; it's a plain `python:3.11-slim` image with
+`data/` baked in, so no bundled sample is missing at runtime. This is not
+currently how the Render deployment below actually builds (that uses
+Render's native Python runtime via `render.yaml`) -- it's here as a
+portable alternative and because a `Dockerfile` is table stakes for a
+portfolio backend regardless of what a given host happens to use.
 
 ## Tests & CI
 
