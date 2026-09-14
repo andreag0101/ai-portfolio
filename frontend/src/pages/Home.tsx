@@ -293,18 +293,8 @@ function FeaturedCard({
 
 function RagPreview() {
   return (
-    <div className="flex h-[240px] flex-col justify-center gap-2.5 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-950">
-      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-        &ldquo;Which optimizer converged fastest for the multi-neuron model?&rdquo;
-      </p>
-      <span className="inline-flex w-fit items-center rounded-full bg-gold-50 px-2 py-0.5 text-xs font-medium text-gold-700 ring-1 ring-inset ring-gold-200 dark:bg-gold-950/30 dark:text-gold-400 dark:ring-gold-800">
-        Generated, grounded in retrieved excerpts
-      </span>
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">
-        Adam. Across the learning rates tested, plain SGD converged to a visibly higher, noisier loss
-        while Adam consistently reached the lowest final loss fastest&hellip;
-      </p>
-      <p className="text-xs text-neutral-400">Source: Backpropagation &amp; Optimizers, From Scratch, p.15</p>
+    <div className="h-[240px] overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
+      <img src="/thumbnails/research-assistant.jpg" alt="Research Assistant answering a question with a cited source" className="h-full w-full object-cover" />
     </div>
   );
 }

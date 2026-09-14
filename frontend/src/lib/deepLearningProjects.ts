@@ -28,6 +28,7 @@ export interface DLProject {
   slug: string;
   title: string;
   category: string;
+  thumbnail: string;
   blurb: string;
   topics: string[];
   highlights: { label: string; value: string }[];
@@ -77,6 +78,7 @@ export const dlProjects: DLProject[] = [
     slug: "fundamentals",
     title: "PyTorch Data Pipelines & Python Foundations",
     category: "foundations",
+    thumbnail: `${ASSET}/fundamentals/custom-dataset-samples.png`,
     blurb:
       "The plumbing every later project depends on: Python's iterator protocol and dunder methods, then a custom PyTorch Dataset, data augmentation, and a benchmark of parallel data loading.",
     topics: ["Python magic methods", "Dataset / DataLoader", "Multi-worker benchmarking"],
@@ -126,6 +128,7 @@ export const dlProjects: DLProject[] = [
     slug: "backprop-optimizers",
     title: "Backpropagation & Optimizers, From Scratch",
     category: "foundations",
+    thumbnail: `${ASSET}/backprop-optimizers/multi-neuron-optimizers.png`,
     blurb:
       "A one-neuron and a multi-neuron network's forward pass, backward pass, and three optimizers (SGD, SGD+Momentum, Adam) hand-derived and hand-coded, then raced against PyTorch's own autograd.",
     topics: ["Manual backprop", "SGD / Momentum / Adam", "torch.autograd comparison"],
@@ -182,6 +185,7 @@ export const dlProjects: DLProject[] = [
     slug: "cnn-dataset-design",
     title: "Custom CNN Classifier & Dataset Design",
     category: "cnns",
+    thumbnail: `${ASSET}/cnn-dataset-design/dataset-grid.jpg`,
     blurb:
       "A CNN built from scratch and trained on three self-assembled COCO subsets (single-object, multi-instance same-class, and multi-instance mixed-class) to isolate how dataset composition, not architecture, drives accuracy.",
     topics: ["COCO subset curation", "CNN from scratch", "Confusion matrix analysis"],
@@ -242,6 +246,7 @@ export const dlProjects: DLProject[] = [
     slug: "cnn-architecture-ablations",
     title: "CNN Architecture Ablations: Depth, Downsampling & Skip Connections",
     category: "cnns",
+    thumbnail: `${ASSET}/cnn-architecture-ablations/net3-confusion.png`,
     blurb:
       "Three CIFAR-10 CNNs of increasing depth (2, 3, and 8 conv layers), then a head-to-head of two downsampling strategies inside a skip-connection block, isolating what in a CNN's design actually buys accuracy.",
     topics: ["Depth ablation", "Skip connections", "Strided conv vs. max-pool"],
@@ -307,6 +312,7 @@ out = self.downsampler2(out)`,
     slug: "object-detection",
     title: "Object Detection From Scratch on COCO",
     category: "detection-segmentation",
+    thumbnail: `${ASSET}/object-detection/detections-strip.jpg`,
     blurb:
       "A single-shot multi-object detector (5 anchor aspect ratios over an 8×8 grid, and a combined objectness + bounding-box regression + classification loss) trained to localize pizzas, cats, and buses in real photos.",
     topics: ["Custom COCO subset", "Anchor boxes", "IoU-based evaluation"],
@@ -359,6 +365,7 @@ out = self.downsampler2(out)`,
     slug: "semantic-segmentation",
     title: "Semantic Segmentation: mUNet + ASPP",
     category: "detection-segmentation",
+    thumbnail: `${ASSET}/semantic-segmentation/mask-grid.png`,
     blurb:
       "A multi-channel U-Net (mUNet) segments five overlapping shape classes per image; adding Atrous Spatial Pyramid Pooling and tuning the Dice-loss weight further sharpens the predicted masks.",
     topics: ["U-Net encoder/decoder", "Atrous (dilated) convolution", "Dice loss"],
@@ -415,6 +422,7 @@ out = self.downsampler2(out)`,
     slug: "gan-diffusion",
     title: "GANs vs. Diffusion: Face Generation",
     category: "generative",
+    thumbnail: `${ASSET}/gan-diffusion/gan-faces-wide.png`,
     blurb:
       "A DCGAN trained from scratch on CelebA faces, benchmarked against a pretrained diffusion model by Fréchet Inception Distance, then fine-tuned using the diffusion model's own output as extra training data.",
     topics: ["DCGAN", "Fréchet Inception Distance", "GAN fine-tuning"],
@@ -466,6 +474,7 @@ out = self.downsampler2(out)`,
     slug: "transformer-translation",
     title: "Transformer Machine Translation: Post-LN vs. Pre-LN",
     category: "sequence",
+    thumbnail: `${ASSET}/transformer-translation/fg-loss.png`,
     blurb:
       "Two Transformer variants, a standard post-LayerNorm model (FG) and a pre-LayerNorm model (PreLN), trained to translate English into Spanish and scored by edit distance against reference translations.",
     topics: ["Transformer (seq2seq)", "LayerNorm placement", "Levenshtein evaluation"],

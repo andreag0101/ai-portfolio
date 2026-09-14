@@ -4,6 +4,7 @@ export interface ProjectMeta {
   blurb: string;
   topics: string[];
   path?: string; // present if there's a live interactive demo
+  thumbnail?: string;
 }
 
 export interface Category {
@@ -25,6 +26,7 @@ export const categories: Category[] = [
         blurb: "Homogeneous points and lines, duality, and line intersection with cross products.",
         topics: ["Homogeneous coordinates", "Point-line duality"],
         path: "/projective-geometry",
+        thumbnail: "/thumbnails/projective-geometry.jpg",
       },
       {
         id: "planar-rectification",
@@ -33,6 +35,7 @@ export const categories: Category[] = [
           "Automatically finds the dominant quadrilateral in a photo (a document, screen, sign, frame) and either straightens it to a fronto-parallel view, or warps a second image into it.",
         topics: ["Automatic quad detection", "DLT homography", "Perspective warping"],
         path: "/homography",
+        thumbnail: "/thumbnails/planar-rectification.jpg",
       },
       {
         id: "camera-calibration",
@@ -40,6 +43,7 @@ export const categories: Category[] = [
         blurb: "Zhang's method: from-scratch pattern corner detection, homographies, and closed-form intrinsics recovery.",
         topics: ["Zhang's method", "Intrinsics / extrinsics"],
         path: "/calibration",
+        thumbnail: "/thumbnails/camera-calibration.jpg",
       },
     ],
   },
@@ -54,6 +58,7 @@ export const categories: Category[] = [
         blurb: "From-scratch multiscale Harris corners matched across image pairs with SSD and NCC.",
         topics: ["Harris corners", "SSD / NCC matching"],
         path: "/corners",
+        thumbnail: "/thumbnails/corner-matching.jpg",
       },
       {
         id: "panorama",
@@ -61,6 +66,7 @@ export const categories: Category[] = [
         blurb: "SIFT correspondences, a custom RANSAC, and Levenberg-Marquardt refinement stitched into one image.",
         topics: ["SIFT", "RANSAC", "Nonlinear refinement"],
         path: "/panorama",
+        thumbnail: "/thumbnails/panorama.jpg",
       },
     ],
   },
@@ -75,6 +81,7 @@ export const categories: Category[] = [
         blurb: "Iterative Otsu thresholding (color and texture) with morphological cleanup and contour extraction.",
         topics: ["Otsu thresholding", "Morphology"],
         path: "/segmentation",
+        thumbnail: "/thumbnails/image-segmentation.jpg",
       },
       {
         id: "texture-classification",
@@ -82,6 +89,7 @@ export const categories: Category[] = [
         blurb: "Rotation-invariant Local Binary Patterns and deep Gram-matrix style features for weather classification.",
         topics: ["LBP", "Gram matrices"],
         path: "/texture",
+        thumbnail: "/thumbnails/texture-classification.jpg",
       },
     ],
   },
@@ -96,6 +104,7 @@ export const categories: Category[] = [
         blurb: "Epipolar geometry and a census-transform windowed dense disparity map between a stereo pair.",
         topics: ["Epipolar geometry", "Dense stereo matching"],
         path: "/disparity",
+        thumbnail: "/thumbnails/stereo-disparity.jpg",
       },
     ],
   },
@@ -110,6 +119,7 @@ export const categories: Category[] = [
         blurb: "PCA and Fisher-LDA subspace projections, nearest-neighbor matched against 30 people.",
         topics: ["PCA / eigenfaces", "Fisher-LDA"],
         path: "/face",
+        thumbnail: "/thumbnails/face-recognition.jpg",
       },
       {
         id: "car-detection",
@@ -117,6 +127,7 @@ export const categories: Category[] = [
         blurb: "Integral-image Haar-like features boosted with AdaBoost, Viola-Jones style, classifying cropped patches.",
         topics: ["Haar features", "AdaBoost"],
         path: "/car-detection",
+        thumbnail: "/thumbnails/car-detection.jpg",
       },
     ],
   },
