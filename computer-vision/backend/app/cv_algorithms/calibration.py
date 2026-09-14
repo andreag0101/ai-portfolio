@@ -38,7 +38,6 @@ from scipy.optimize import least_squares
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import io
 
 from .panorama import get_H_LLS
@@ -249,36 +248,78 @@ def draw_reprojection(img: np.ndarray, model_coords: np.ndarray, img_coords: np.
     return out
 
 
+def _draw_camera_frustum(ax, R: np.ndarray, C: np.ndarray, color, scale: float) -> None:
+    """A small pyramid: apex at the camera center C, base a rectangle one
+    `scale` unit along the camera's local +Z (its viewing direction, the
+    convention `x_cam = R @ x_world + t` implies -- world points in front of
+    the camera land at positive camera-frame Z). Reads as a recognizable
+    "camera" glyph instead of an axis triad with no sense of which way it's
+    pointing or how it relates to anything else in the scene.
+    """
+    hw, hh, dz = scale * 0.45, scale * 0.3, scale
+    local = np.array([[-hw, -hh, dz], [hw, -hh, dz], [hw, hh, dz], [-hw, hh, dz]]).T
+    world = ((R.T @ local) + C.reshape(3, 1)).T
+    base = np.vstack([world, world[:1]])
+    ax.plot(base[:, 0], base[:, 1], base[:, 2], color=color, linewidth=1.3)
+    for corner in world:
+        ax.plot([C[0], corner[0]], [C[1], corner[1]], [C[2], corner[2]], color=color, linewidth=1.0)
+    ax.scatter(*C, color=color, s=20, depthshade=False)
+
+
 def render_camera_poses(R_list: list[np.ndarray], t_list: list[np.ndarray]) -> np.ndarray:
-    fig = plt.figure(figsize=(6, 6))
+    """Renders the calibration pattern as one real, checkered-textured plane
+    at the world origin (Z=0 -- the plane every homography/extrinsic pair in
+    `calibrate` is defined relative to), with each photo's recovered camera
+    drawn as a small frustum pointed at it. The previous version drew a
+    same-sized, randomly colored square floating at *each* camera's own
+    position/orientation instead of the actual pattern, plus bare axis
+    triads -- with no shared reference plane in the scene, there was no way
+    to judge relative scale, distance, or which way a camera was actually
+    pointed.
+    """
+    fig = plt.figure(figsize=(7, 7))
     ax = fig.add_subplot(111, projection="3d")
-    axes_local = [np.array([1, 0, 0]).reshape(3, 1), np.array([0, 1, 0]).reshape(3, 1), np.array([0, 0, 1]).reshape(3, 1)]
-    colors = ["red", "green", "blue"]
-    labels = ["X", "Y", "Z"]
 
-    all_centers = []
+    pattern_img = cv2.imread(str(PATTERN_PATH))
+    pattern_rgb = cv2.cvtColor(pattern_img, cv2.COLOR_BGR2RGB)
+    tex_rows, tex_cols = 60, 46
+    pattern_small = cv2.resize(pattern_rgb, (tex_cols, tex_rows), interpolation=cv2.INTER_AREA)
+    facecolors = pattern_small.astype(np.float64) / 255.0
+    X, Y = np.meshgrid(np.linspace(0, RECT_W, tex_cols + 1), np.linspace(0, RECT_H, tex_rows + 1))
+    Z = np.zeros_like(X)
+    ax.plot_surface(X, Y, Z, facecolors=facecolors, shade=False, rstride=1, cstride=1, antialiased=False, zorder=1)
+
+    all_centers = np.array([(-R.T @ t).ravel() for R, t in zip(R_list, t_list)])
+    plane_corners = np.array([[0, 0, 0], [RECT_W, 0, 0], [0, RECT_H, 0], [RECT_W, RECT_H, 0]])
+    pts = np.vstack([all_centers, plane_corners])
+    # Scale each camera frustum off the actual scene extent rather than a
+    # fixed constant -- cameras a couple thousand units from the pattern (a
+    # typical handheld-photo distance in these units) need a much bigger
+    # glyph than 60 units to read as a camera at all, and a fixed size would
+    # either vanish or dwarf the pattern depending on capture distance.
+    scene_extent = float(np.max(np.ptp(pts, axis=0)))
+    cam_scale = max(scene_extent * 0.09, 30.0)
+
+    palette = plt.get_cmap("tab10")(np.linspace(0, 1, max(len(R_list), 1)))
     for i, (R, t) in enumerate(zip(R_list, t_list)):
-        C = (-R.T @ t).ravel()
-        all_centers.append(C)
-        for axis, color, label in zip(axes_local, colors, labels):
-            direction = (R.T @ axis).ravel()
-            ax.quiver(*C, *direction, color=color, length=160, label=label if i == 0 else None)
-        rect_w, rect_h = 160, 160
-        plane_corners = np.array([[0, 0, 0], [rect_w, 0, 0], [rect_w, rect_h, 0], [0, rect_h, 0]]).T
-        plane_world = ((R.T @ plane_corners) + C.reshape(3, 1)).T
-        ax.add_collection3d(Poly3DCollection([plane_world], color=np.random.rand(3), alpha=0.3))
+        C = all_centers[i]
+        color = palette[i % len(palette)]
+        _draw_camera_frustum(ax, R, C, color, cam_scale)
+        ax.text(C[0], C[1], C[2], f"  {i + 1}", fontsize=8, color=color)
 
-    all_centers = np.array(all_centers)
-    margin = 300
-    ax.set_xlim(all_centers[:, 0].min() - margin, all_centers[:, 0].max() + margin)
-    ax.set_ylim(all_centers[:, 1].min() - margin, all_centers[:, 1].max() + margin)
-    z_lo, z_hi = all_centers[:, 2].min() - margin, all_centers[:, 2].max() + margin
-    ax.set_zlim(min(z_lo, -100), max(z_hi, 100))
+    margin = 80
+    x_lo, x_hi = pts[:, 0].min() - margin, pts[:, 0].max() + margin
+    y_lo, y_hi = pts[:, 1].min() - margin, pts[:, 1].max() + margin
+    z_lo, z_hi = min(pts[:, 2].min() - margin, -20), max(pts[:, 2].max() + margin, 100)
+    ax.set_xlim(x_lo, x_hi)
+    ax.set_ylim(y_lo, y_hi)
+    ax.set_zlim(z_lo, z_hi)
+    ax.set_box_aspect((x_hi - x_lo, y_hi - y_lo, z_hi - z_lo))
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_title("Recovered camera poses relative to the calibration plane")
-    ax.legend()
+    ax.view_init(elev=28, azim=-60)
 
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=120)

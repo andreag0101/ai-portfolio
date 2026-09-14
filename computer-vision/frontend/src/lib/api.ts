@@ -328,32 +328,3 @@ export async function runDisparity(
   return unwrap<DisparityResult>(res);
 }
 
-export interface SparseReconstructionResult {
-  left: string;
-  right: string;
-  numSiftMatches: number;
-  numRansacInliers: number;
-  keypointMatchOverlay: string;
-  rectifiedLeft: string;
-  rectifiedRight: string;
-  edgesLeft: string;
-  edgesRight: string;
-  edgeMatchOverlay: string;
-  numEdgeMatches: number;
-  numReconstructed: number;
-  medianParallaxDeg: number;
-  pointCloud: PointCloudData;
-}
-
-export async function runSparseReconstruction(left: File, right: File): Promise<SparseReconstructionResult> {
-  const form = new FormData();
-  form.append("left", left);
-  form.append("right", right);
-  const res = await fetch(`${API_BASE}/sparse-reconstruction`, { method: "POST", body: form });
-  return unwrap<SparseReconstructionResult>(res);
-}
-
-export async function getSparseReconstructionSample(): Promise<{ left: string; right: string }> {
-  const res = await fetch(`${API_BASE}/sparse-reconstruction/sample`);
-  return unwrap<{ left: string; right: string }>(res);
-}

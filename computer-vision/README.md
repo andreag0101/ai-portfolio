@@ -10,7 +10,7 @@ car/non-car patches, and a curated sample input per demo) is bundled under
 `backend/data/` so the whole thing runs standalone — no external files or
 uploads required to try any of it.
 
-## The 12 demos
+## The 11 demos
 
 - **Projective Geometry Playground** — point-line duality (cross products) as
   a live drag-the-triangle/drag-the-aim canvas.
@@ -36,12 +36,6 @@ uploads required to try any of it.
   a stereo pair, plus a step that unprojects the disparity map into an
   interactive, draggable 3D point cloud (three.js) colored from the source
   photo.
-- **Sparse Stereo Reconstruction (Edge-Based)** — the from-scratch two-view
-  epipolar-geometry pipeline: normalized 8-point fundamental matrix + RANSAC
-  (Sampson error), essential-matrix decomposition with a cheirality check for
-  a calibrated camera pair, epipole-based self-rectification, then Canny edge
-  detection and row-constrained matching so only edge/interest points —
-  never flat background — get triangulated into the 3D point cloud.
 - **Face Recognition: Eigenfaces vs. Fisherfaces** — PCA and Fisher-LDA
   subspaces trained on 630 bundled photos of 30 people, 1-NN matching, a live
   held-out accuracy-vs-K chart, and the actual eigenface/fisherface basis
@@ -54,12 +48,8 @@ Several real bugs turned up in the original coursework code while porting it
 (an axis mismatch in a `take_along_axis` call that silently corrupts AdaBoost
 training, a sign/formula slip in the closed-form camera-intrinsics
 extraction, a sort-direction bug that would greedily commit the *worst*
-feature matches first, and in the sparse reconstruction's original HW9
-source: the right-image rectified edge points were built from the *left*
-image's edge coordinates, and the final triangulation call passed the same
-point set as both views instead of the correct left/right pair) — each is
-documented with a before/after explanation in the relevant module under
-`backend/app/cv_algorithms/`.
+feature matches first) — each is documented with a before/after explanation
+in the relevant module under `backend/app/cv_algorithms/`.
 
 ## Layout
 
@@ -108,7 +98,6 @@ against a reference set, or need a known-good sample input at runtime:
 | `data/face_recognition/{train,test}/` | Face recognition (PCA/LDA training + held-out accuracy) | ~46 MB |
 | `data/car_detection/{train,test}/` | Car detection (AdaBoost training + held-out accuracy) | ~12 MB |
 | `data/disparity/{left,right}.png` | Dense stereo (sample rectified pair) | ~1 MB |
-| `data/sparse_reconstruction/{left,right}.jpg` | Sparse reconstruction (sample pair) | ~1 MB |
 | `data/homography/` | Planar rectification (a laptop-screen photo to straighten, plus a picture-frame + insert-image pair) | ~700 KB |
 | `data/corners/{left,right}.jpg` | Corner matching (a two-viewpoint building photo pair, strong architectural corners) | ~300 KB |
 | `data/panorama/{1..5}.jpg` | Panorama stitching (a 5-photo left-to-right sequence) | ~500 KB |

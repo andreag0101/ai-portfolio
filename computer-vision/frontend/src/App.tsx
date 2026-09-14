@@ -4,7 +4,6 @@ import Home from "./pages/Home";
 import Segmentation from "./pages/Segmentation";
 import Panorama from "./pages/Panorama";
 import Disparity from "./pages/Disparity";
-import SparseReconstruction from "./pages/SparseReconstruction";
 import Homography from "./pages/Homography";
 import ProjectiveGeometry from "./pages/ProjectiveGeometry";
 import CornerMatching from "./pages/CornerMatching";
@@ -22,7 +21,6 @@ export default function App() {
         <Route path="/segmentation" element={<Segmentation />} />
         <Route path="/panorama" element={<Panorama />} />
         <Route path="/disparity" element={<Disparity />} />
-        <Route path="/sparse-reconstruction" element={<SparseReconstruction />} />
         <Route path="/homography" element={<Homography />} />
         <Route path="/projective-geometry" element={<ProjectiveGeometry />} />
         <Route path="/corners" element={<CornerMatching />} />
