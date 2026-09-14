@@ -61,7 +61,7 @@ was found by manually trying an unscripted question.
   sentence-transformer) would generalize better across phrasings; it was
   deliberately not used here to keep retrieval free of any model download
   or inference cost, matching the site's "bundled, standalone, no external
-  dependencies" philosophy (see the root `Website/README.md`).
+  dependencies" philosophy (see the root `README.md`).
 - **Found and fixed once already, could regress:** a chunk that densely
   repeats a generic term (e.g. "loss function" in a backprop write-up) can
   outrank a chunk that's actually about the query's topic but uses the term
