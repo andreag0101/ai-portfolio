@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/andreag0101/ai-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/andreag0101/ai-portfolio/actions/workflows/ci.yml)
 
-**Live demo:** [ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app](https://ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app/)
+**Live demo:** [[ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app](https://ai-portfolio-7x0t2bk8j-ai-portfolio6.vercel.app/)](https://andrea-goh-portfolio-44o97g0rg-ai-portfolio6.vercel.app/)
 <!-- NOTE: this URL currently redirects to Vercel's SSO login for anyone
      without access to the andreag0101 Vercel account/team -- it needs
      Vercel's Deployment Protection turned off (or the stable production
