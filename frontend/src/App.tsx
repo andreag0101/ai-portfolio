@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import RagChatWidget from "./components/RagChatWidget";
 import Home from "./pages/Home";
 import Segmentation from "./pages/Segmentation";
 import Panorama from "./pages/Panorama";
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/deep-learning/:slug" element={<DeepLearningProject />} />
         <Route path="/research-assistant" element={<ResearchAssistant />} />
       </Routes>
+      <RagChatWidget />
     </div>
   );
 }
